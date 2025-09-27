@@ -1,0 +1,62 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: repalign-postgres
+    environment:
+      POSTGRES_USER: repalign
+      POSTGRES_PASSWORD: repalign_dev_password
+      POSTGRES_DB: repalign_dev
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init-scripts:/docker-entrypoint-initdb.d
+    networks:
+      - repalign-network
+
+  redis:
+    image: redis:7-alpine
+    container_name: repalign-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - repalign-network
+    command: redis-server --appendonly yes
+
+  # Uncomment this section when you want to run the API in Docker
+  # api:
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile
+  #   container_name: repalign-api
+  #   ports:
+  #     - "3000:3000"
+  #   environment:
+  #     - NODE_ENV=development
+  #     - DATABASE_HOST=postgres
+  #     - DATABASE_PORT=5432
+  #     - DATABASE_USERNAME=repalign
+  #     - DATABASE_PASSWORD=repalign_dev_password
+  #     - DATABASE_NAME=repalign_dev
+  #     - REDIS_HOST=redis
+  #     - REDIS_PORT=6379
+  #   depends_on:
+  #     - postgres
+  #     - redis
+  #   networks:
+  #     - repalign-network
+  #   volumes:
+  #     - .:/app
+  #     - /app/node_modules
+
+volumes:
+  postgres_data:
+  redis_data:
+
+networks:
+  repalign-network:
+    driver: bridge
