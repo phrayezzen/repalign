@@ -22,7 +22,7 @@ export class AuthService {
   ) {}
 
   async register(registerDto: RegisterDto): Promise<AuthResponseDto> {
-    const { username, email, password, ...userData } = registerDto;
+    const { username, email, password, displayName } = registerDto;
 
     // Check if user already exists
     const existingUser = await this.usersService.findByUsernameOrEmail(username, email);
@@ -33,19 +33,16 @@ export class AuthService {
     // Hash password
     const hashedPassword = await bcrypt.hash(password, 12);
 
-    // Create user
+    // Create user with minimal data, default to CITIZEN
+    // Profile will be created after onboarding is complete
     const user = await this.usersService.create({
       username,
       email,
       password: hashedPassword,
-      ...userData,
+      displayName,
+      userType: UserType.CITIZEN, // Default type
+      onboardingCompleted: false, // Must complete onboarding
     });
-
-    // Create profile based on user type
-    if (user.userType === UserType.CITIZEN) {
-      await this.usersService.createCitizenProfile(user.id);
-    }
-    // Note: Legislator profiles are created via Congress sync, not registration
 
     // Generate tokens
     const tokens = await this.generateTokens(user);

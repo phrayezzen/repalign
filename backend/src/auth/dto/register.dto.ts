@@ -1,10 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEmail, IsEnum, IsNotEmpty, IsOptional, IsString, MinLength } from 'class-validator';
-import { UserType } from '../../users/entities/user.entity';
+import { IsEmail, IsNotEmpty, IsString, MinLength, Matches } from 'class-validator';
 
 export class RegisterDto {
   @ApiProperty({
-    description: 'Unique username',
+    description: 'Unique username or phone number',
     example: 'johndoe123',
   })
   @IsString()
@@ -20,11 +19,17 @@ export class RegisterDto {
   email: string;
 
   @ApiProperty({
-    description: 'User password (minimum 8 characters)',
+    description: 'User password (minimum 8 characters, must contain uppercase, lowercase, number, and special character)',
     example: 'SecurePassword123!',
   })
   @IsString()
   @MinLength(8)
+  @Matches(
+    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/,
+    {
+      message: 'Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character',
+    },
+  )
   password: string;
 
   @ApiProperty({
@@ -34,29 +39,4 @@ export class RegisterDto {
   @IsString()
   @IsNotEmpty()
   displayName: string;
-
-  @ApiProperty({
-    description: 'User type',
-    enum: UserType,
-    example: UserType.CITIZEN,
-  })
-  @IsEnum(UserType)
-  userType: UserType;
-
-  @ApiProperty({
-    description: 'User location',
-    example: 'New York, NY',
-  })
-  @IsString()
-  @IsNotEmpty()
-  location: string;
-
-  @ApiProperty({
-    description: 'User bio (optional)',
-    example: 'Passionate about civic engagement and democracy.',
-    required: false,
-  })
-  @IsString()
-  @IsOptional()
-  bio?: string;
 }

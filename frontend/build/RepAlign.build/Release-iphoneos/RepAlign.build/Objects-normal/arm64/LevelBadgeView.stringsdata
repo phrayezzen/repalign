@@ -1,0 +1,24 @@
+{
+  "source": "/Users/xilinliu/Projects/RepAlign/frontend/RepAlign/Views/LevelBadgeView.swift",
+  "tables": {
+    "Localizable": [
+      {
+        "comment": "",
+        "key": "Level %lld",
+        "location": {
+          "startingColumn": 33,
+          "startingLine": 24
+        }
+      },
+      {
+        "comment": "",
+        "key": "Level %lld",
+        "location": {
+          "startingColumn": 52,
+          "startingLine": 24
+        }
+      }
+    ]
+  },
+  "version": 1
+}

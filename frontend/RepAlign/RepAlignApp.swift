@@ -10,6 +10,7 @@ import SwiftData
 
 @main
 struct RepAlignApp: App {
+    @StateObject private var authService = AuthService.shared
     var sharedModelContainer: ModelContainer = {
         let schema = Schema([
             User.self,
@@ -73,7 +74,19 @@ struct RepAlignApp: App {
 
     var body: some Scene {
         WindowGroup {
-            MainTabView()
+            if authService.isAuthenticated {
+                // Check if user needs to complete onboarding
+                if let user = authService.currentUser, user.onboardingCompleted == false {
+                    OnboardingCoordinator()
+                        .environmentObject(authService)
+                } else {
+                    MainTabView()
+                        .environmentObject(authService)
+                }
+            } else {
+                LoginView()
+                    .environmentObject(authService)
+            }
         }
         .modelContainer(sharedModelContainer)
     }

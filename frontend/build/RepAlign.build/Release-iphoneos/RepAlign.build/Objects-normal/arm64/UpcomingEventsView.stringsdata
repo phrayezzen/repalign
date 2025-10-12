@@ -1,0 +1,48 @@
+{
+  "source": "/Users/xilinliu/Projects/RepAlign/frontend/RepAlign/Views/UpcomingEventsView.swift",
+  "tables": {
+    "Localizable": [
+      {
+        "comment": "",
+        "key": "Upcoming Events",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 19
+        }
+      },
+      {
+        "comment": "",
+        "key": "No upcoming events",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 41
+        }
+      },
+      {
+        "comment": "",
+        "key": "%lld people attending",
+        "location": {
+          "startingColumn": 34,
+          "startingLine": 96
+        }
+      },
+      {
+        "comment": "",
+        "key": "RSVP'd",
+        "location": {
+          "startingColumn": 41,
+          "startingLine": 107
+        }
+      },
+      {
+        "comment": "",
+        "key": "RSVP",
+        "location": {
+          "startingColumn": 52,
+          "startingLine": 107
+        }
+      }
+    ]
+  },
+  "version": 1
+}

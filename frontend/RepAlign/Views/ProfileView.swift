@@ -6,6 +6,8 @@ struct ProfileView: View {
     let citizenProfile: CitizenProfile?
     let legislatorProfile: LegislatorProfile?
     @State private var isFollowing = false
+    @State private var showingTakeAction = false
+    @EnvironmentObject private var authService: AuthService
 
     @Query private var bills: [Bill]
     @Query private var votes: [Vote]
@@ -13,6 +15,12 @@ struct ProfileView: View {
     @Query private var events: [Event]
     @Query private var allUsers: [User]
     @Query private var allLegislatorProfiles: [LegislatorProfile]
+
+    private var isCurrentUser: Bool {
+        // Check if this user matches the authenticated user
+        // For now, we'll use user ID matching when we have proper auth
+        authService.currentUser?.id == user.id
+    }
 
     var body: some View {
         ScrollView {
@@ -28,12 +36,29 @@ struct ProfileView: View {
                     legislatorExtraContent
                 }
 
+                // User's Feed Section
+                ProfileFeedSection(userId: user.id)
+
                 Spacer(minLength: 20)
             }
             .padding(.horizontal, 20)
             .padding(.top, 20)
         }
         .background(Color(.systemGroupedBackground))
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            if isCurrentUser {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button("Logout") {
+                        authService.logout()
+                    }
+                    .foregroundColor(.red)
+                }
+            }
+        }
+        .sheet(isPresented: $showingTakeAction) {
+            TakeActionView()
+        }
     }
 
     @ViewBuilder
@@ -164,25 +189,40 @@ struct ProfileView: View {
     }
 
     private var citizenActionButtons: some View {
-        HStack(spacing: 12) {
-            Button(action: { isFollowing.toggle() }) {
-                Text(isFollowing ? "Following" : "Follow")
-                    .fontWeight(.semibold)
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 12)
-                    .background(isFollowing ? Color.gray.opacity(0.2) : Color.red)
-                    .foregroundColor(isFollowing ? .primary : .white)
-                    .cornerRadius(8)
+        VStack(spacing: 8) {
+            HStack(spacing: 12) {
+                Button(action: { isFollowing.toggle() }) {
+                    Text(isFollowing ? "Following" : "Follow")
+                        .fontWeight(.semibold)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 12)
+                        .background(isFollowing ? Color.gray.opacity(0.2) : Color.red)
+                        .foregroundColor(isFollowing ? .primary : .white)
+                        .cornerRadius(8)
+                }
+
+                Button(action: {}) {
+                    Text("Message")
+                        .fontWeight(.semibold)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 12)
+                        .background(Color.gray.opacity(0.2))
+                        .foregroundColor(.primary)
+                        .cornerRadius(8)
+                }
             }
 
-            Button(action: {}) {
-                Text("Message")
-                    .fontWeight(.semibold)
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 12)
-                    .background(Color.gray.opacity(0.2))
-                    .foregroundColor(.primary)
-                    .cornerRadius(8)
+            Button(action: { showingTakeAction = true }) {
+                HStack {
+                    Image(systemName: "megaphone")
+                    Text("Take Action")
+                }
+                .fontWeight(.semibold)
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 12)
+                .background(Color.blue)
+                .foregroundColor(.white)
+                .cornerRadius(8)
             }
         }
     }
@@ -228,6 +268,19 @@ struct ProfileView: View {
                     .foregroundColor(.primary)
                     .cornerRadius(8)
                 }
+            }
+
+            Button(action: { showingTakeAction = true }) {
+                HStack {
+                    Image(systemName: "megaphone")
+                    Text("Take Action")
+                }
+                .fontWeight(.semibold)
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 12)
+                .background(Color.green)
+                .foregroundColor(.white)
+                .cornerRadius(8)
             }
         }
     }
@@ -371,6 +424,121 @@ struct RatingItemView: View {
             Text("\(Int(percentage))%")
                 .font(.headline)
                 .fontWeight(.semibold)
+        }
+    }
+}
+
+struct ProfileFeedSection: View {
+    let userId: String
+    @StateObject private var repository = FeedRepository()
+    @State private var feedItems: [FeedItem] = []
+    @State private var isLoading = false
+    @State private var errorMessage: String?
+    @State private var showError = false
+
+    var userFeedItems: [FeedItem] {
+        return feedItems.filter { $0.authorId == userId }
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            HStack {
+                Text("Recent Activity")
+                    .font(.title2)
+                    .fontWeight(.bold)
+                    .foregroundColor(.primary)
+
+                Spacer()
+
+                if !userFeedItems.isEmpty {
+                    Text("\(userFeedItems.count) posts")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
+            }
+            .padding(.horizontal, 20)
+
+            if isLoading {
+                VStack(spacing: 16) {
+                    ProgressView()
+                        .scaleEffect(1.2)
+                    Text("Loading activity...")
+                        .foregroundColor(.secondary)
+                }
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 40)
+            } else if userFeedItems.isEmpty {
+                VStack(spacing: 12) {
+                    Image(systemName: "doc.text")
+                        .font(.system(size: 40))
+                        .foregroundColor(.secondary)
+
+                    Text("No posts yet")
+                        .font(.headline)
+                        .foregroundColor(.secondary)
+
+                    Text("This user hasn't shared any content")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                        .multilineTextAlignment(.center)
+                }
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 40)
+            } else {
+                LazyVStack(spacing: 12) {
+                    ForEach(userFeedItems.prefix(5)) { item in
+                        FeedCard(item: item)
+                    }
+
+                    if userFeedItems.count > 5 {
+                        Button(action: {
+                            // TODO: Navigate to full profile feed
+                        }) {
+                            Text("View All Posts (\(userFeedItems.count))")
+                                .font(.subheadline)
+                                .fontWeight(.medium)
+                                .foregroundColor(.blue)
+                                .frame(maxWidth: .infinity)
+                                .padding(.vertical, 12)
+                                .background(Color.blue.opacity(0.1))
+                                .cornerRadius(8)
+                        }
+                        .padding(.horizontal, 20)
+                    }
+                }
+                .padding(.horizontal, 20)
+            }
+        }
+        .padding(.top, 20)
+        .background(Color(.systemGroupedBackground))
+        .task {
+            await loadUserFeed()
+        }
+        .alert("Error", isPresented: $showError) {
+            Button("OK") { }
+        } message: {
+            Text(errorMessage ?? "An unexpected error occurred")
+        }
+    }
+
+    private func loadUserFeed() async {
+        guard !isLoading else { return }
+
+        isLoading = true
+        errorMessage = nil
+
+        do {
+            let items = try await repository.loadInitialFeed()
+            await MainActor.run {
+                self.feedItems = items
+                self.isLoading = false
+            }
+        } catch {
+            await MainActor.run {
+                self.errorMessage = error.localizedDescription
+                self.showError = true
+                self.isLoading = false
+            }
         }
     }
 }

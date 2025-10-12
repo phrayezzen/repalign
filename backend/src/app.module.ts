@@ -10,6 +10,27 @@ import { UsersModule } from './users/users.module';
 import { PostsModule } from './posts/posts.module';
 import { CongressModule } from './congress/congress.module';
 import { GamificationModule } from './gamification/gamification.module';
+import { FeedModule } from './feed/feed.module';
+
+// Import all entities explicitly
+import { User } from './users/entities/user.entity';
+import { CitizenProfile } from './users/entities/citizen-profile.entity';
+import { LegislatorProfile } from './users/entities/legislator-profile.entity';
+import { UserInterest } from './users/entities/user-interest.entity';
+import { Post } from './posts/entities/post.entity';
+import { Comment } from './posts/entities/comment.entity';
+import { Like } from './posts/entities/like.entity';
+import { Follow } from './posts/entities/follow.entity';
+import { Bill } from './congress/entities/bill.entity';
+import { Vote } from './congress/entities/vote.entity';
+import { Event } from './congress/entities/event.entity';
+import { EventParticipant } from './congress/entities/event-participant.entity';
+import { Petition } from './congress/entities/petition.entity';
+import { PetitionSignature } from './congress/entities/petition-signature.entity';
+import { CampaignContributor } from './congress/entities/campaign-contributor.entity';
+import { Legislator } from './congress/entities/legislator.entity';
+import { Media } from './posts/entities/media.entity';
+import { Activity } from './gamification/entities/activity.entity';
 
 @Module({
   imports: [
@@ -25,11 +46,32 @@ import { GamificationModule } from './gamification/gamification.module';
       useFactory: (configService: ConfigService) => {
         const isSqlite = configService.get('DATABASE_TYPE') === 'sqlite';
 
+        const entities = [
+          User,
+          CitizenProfile,
+          LegislatorProfile,
+          UserInterest,
+          Post,
+          Comment,
+          Like,
+          Follow,
+          Media,
+          Bill,
+          Vote,
+          Event,
+          EventParticipant,
+          Petition,
+          PetitionSignature,
+          CampaignContributor,
+          Legislator,
+          Activity,
+        ];
+
         if (isSqlite) {
           return {
             type: 'sqlite',
             database: configService.get('DATABASE_NAME') || './repalign_dev.db',
-            entities: [__dirname + '/**/*.entity{.ts,.js}'],
+            entities,
             synchronize: configService.get('NODE_ENV') === 'development',
             logging: configService.get('NODE_ENV') === 'development',
           };
@@ -42,7 +84,7 @@ import { GamificationModule } from './gamification/gamification.module';
           username: configService.get('DATABASE_USERNAME'),
           password: configService.get('DATABASE_PASSWORD'),
           database: configService.get('DATABASE_NAME'),
-          entities: [__dirname + '/**/*.entity{.ts,.js}'],
+          entities,
           synchronize: configService.get('NODE_ENV') === 'development',
           logging: configService.get('NODE_ENV') === 'development',
           migrations: [__dirname + '/database/migrations/*{.ts,.js}'],
@@ -70,6 +112,7 @@ import { GamificationModule } from './gamification/gamification.module';
     PostsModule,
     CongressModule,
     GamificationModule,
+    FeedModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -135,7 +135,7 @@ struct CongressDataTestView: View {
     }
 
     private var dataSourceName: String {
-        switch AppConfig.dataSource {
+        switch AppConfig.shared.dataSource {
         case .congressAPI:
             return "Congress.gov API"
         case .customBackend:

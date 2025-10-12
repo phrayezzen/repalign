@@ -48,7 +48,7 @@ struct CongressSyncView: View {
                 HStack(spacing: 12) {
                     Button(action: {
                         Task {
-                            if AppConfig.congressAPIKey == "YOUR_API_KEY_HERE" {
+                            if AppConfig.shared.congressAPIKey == "YOUR_API_KEY_HERE" {
                                 showingAPIKeyAlert = true
                             } else {
                                 await viewModel.refreshLegislators()
@@ -198,14 +198,14 @@ struct CongressSyncView: View {
                 HStack {
                     Text("Congress:")
                     Spacer()
-                    Text("\(AppConfig.currentCongress)th Congress")
+                    Text("\(AppConfig.shared.currentCongress)th Congress")
                         .foregroundColor(.secondary)
                 }
 
                 HStack {
                     Text("Rate Limit:")
                     Spacer()
-                    Text("\(AppConfig.apiRateLimit) req/hour")
+                    Text("\(AppConfig.shared.apiRateLimit) req/hour")
                         .foregroundColor(.secondary)
                 }
             }
@@ -215,7 +215,7 @@ struct CongressSyncView: View {
     // MARK: - Computed Properties
 
     private var dataSourceName: String {
-        switch AppConfig.dataSource {
+        switch AppConfig.shared.dataSource {
         case .congressAPI:
             return "Congress.gov API"
         case .customBackend:
@@ -246,11 +246,11 @@ struct CongressSyncView: View {
     }
 
     private var apiKeyStatusColor: Color {
-        return AppConfig.congressAPIKey == "YOUR_API_KEY_HERE" ? .red : .green
+        return AppConfig.shared.congressAPIKey == "YOUR_API_KEY_HERE" ? .red : .green
     }
 
     private var apiKeyStatusText: String {
-        return AppConfig.congressAPIKey == "YOUR_API_KEY_HERE" ? "Not Configured" : "Configured"
+        return AppConfig.shared.congressAPIKey == "YOUR_API_KEY_HERE" ? "Not Configured" : "Configured"
     }
 
     private func getLastSyncDate() -> Date? {

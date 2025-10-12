@@ -81,7 +81,10 @@ export class LegislatorProfile {
     default: '',
     transformer: {
       to: (value: string[]) => value?.join(',') || '',
-      from: (value: string) => value ? value.split(',').filter(Boolean) : [],
+      from: (value: string | string[]) => {
+        if (Array.isArray(value)) return value;
+        return value ? value.split(',').filter(Boolean) : [];
+      },
     },
   })
   committees: string[];
@@ -91,7 +94,10 @@ export class LegislatorProfile {
     default: '',
     transformer: {
       to: (value: string[]) => value?.join(',') || '',
-      from: (value: string) => value ? value.split(',').filter(Boolean) : [],
+      from: (value: string | string[]) => {
+        if (Array.isArray(value)) return value;
+        return value ? value.split(',').filter(Boolean) : [];
+      },
     },
   })
   leadership: string[];

@@ -1,0 +1,48 @@
+{
+  "source": "/Users/xilinliu/Projects/RepAlign/frontend/RepAlign/Views/FeedView.swift",
+  "tables": {
+    "Localizable": [
+      {
+        "comment": "",
+        "key": "Feed",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 83
+        }
+      },
+      {
+        "comment": "",
+        "key": "Error",
+        "location": {
+          "startingColumn": 20,
+          "startingLine": 88
+        }
+      },
+      {
+        "comment": "",
+        "key": "OK",
+        "location": {
+          "startingColumn": 24,
+          "startingLine": 89
+        }
+      },
+      {
+        "comment": "",
+        "key": "Search feed...",
+        "location": {
+          "startingColumn": 23,
+          "startingLine": 173
+        }
+      },
+      {
+        "comment": "",
+        "key": "Loading feed...",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 237
+        }
+      }
+    ]
+  },
+  "version": 1
+}

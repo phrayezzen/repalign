@@ -1,0 +1,241 @@
+{
+  "" : {
+    "const-values" : "/Users/xilinliu/Projects/RepAlign/frontend/build/RepAlign.build/Release-iphoneos/RepAlign.build/Objects-normal/arm64/RepAlign-primary.swiftconstvalues",
+    "dependencies" : "/Users/xilinliu/Projects/RepAlign/frontend/build/RepAlign.build/Release-iphoneos/RepAlign.build/Objects-normal/arm64/RepAlign-primary.d",
+    "diagnostics" : "/Users/xilinliu/Projects/RepAlign/frontend/build/RepAlign.build/Release-iphoneos/RepAlign.build/Objects-normal/arm64/RepAlign-primary.dia",
+    "emit-module-dependencies" : "/Users/xilinliu/Projects/RepAlign/frontend/build/RepAlign.build/Release-iphoneos/RepAlign.build/Objects-normal/arm64/RepAlign-primary-emit-module.d",
+    "emit-module-diagnostics" : "/Users/xilinliu/Projects/RepAlign/frontend/build/RepAlign.build/Release-iphoneos/RepAlign.build/Objects-normal/arm64/RepAlign-primary-emit-module.dia",
+    "pch" : "/Users/xilinliu/Projects/RepAlign/frontend/build/RepAlign.build/Release-iphoneos/RepAlign.build/Objects-normal/arm64/RepAlign-primary-Bridging-header.pch",
+    "swift-dependencies" : "/Users/xilinliu/Projects/RepAlign/frontend/build/RepAlign.build/Release-iphoneos/RepAlign.build/Objects-normal/arm64/RepAlign-primary.swiftdeps"
+  },
+  "/Users/xilinliu/Projects/RepAlign/frontend/RepAlign/Config/AppConfig.swift" : {
+    "index-unit-output-path" : "/RepAlign.build/Release-iphoneos/RepAlign.build/Objects-normal/arm64/AppConfig.o",
+    "llvm-bc" : "/Users/xilinliu/Projects/RepAlign/frontend/build/RepAlign.build/Release-iphoneos/RepAlign.build/Objects-normal/arm64/AppConfig.bc",
+    "object" : "/Users/xilinliu/Projects/RepAlign/frontend/build/RepAlign.build/Release-iphoneos/RepAlign.build/Objects-normal/arm64/AppConfig.o"
+  },
+  "/Users/xilinliu/Projects/RepAlign/frontend/RepAlign/DataSources/FeedDataSource.swift" : {
+    "index-unit-output-path" : "/RepAlign.build/Release-iphoneos/RepAlign.build/Objects-normal/arm64/FeedDataSource.o",
+    "llvm-bc" : "/Users/xilinliu/Projects/RepAlign/frontend/build/RepAlign.build/Release-iphoneos/RepAlign.build/Objects-normal/arm64/FeedDataSource.bc",
+    "object" : "/Users/xilinliu/Projects/RepAlign/frontend/build/RepAlign.build/Release-iphoneos/RepAlign.build/Objects-normal/arm64/FeedDataSource.o"
+  },
+  "/Users/xilinliu/Projects/RepAlign/frontend/RepAlign/DataSources/LegislatorCache.swift" : {
+    "index-unit-output-path" : "/RepAlign.build/Release-iphoneos/RepAlign.build/Objects-normal/arm64/LegislatorCache.o",
+    "llvm-bc" : "/Users/xilinliu/Projects/RepAlign/frontend/build/RepAlign.build/Release-iphoneos/RepAlign.build/Objects-normal/arm64/LegislatorCache.bc",
+    "object" : "/Users/xilinliu/Projects/RepAlign/frontend/build/RepAlign.build/Release-iphoneos/RepAlign.build/Objects-normal/arm64/LegislatorCache.o"
+  },
+  "/Users/xilinliu/Projects/RepAlign/frontend/RepAlign/DataSources/LegislatorDataSource.swift" : {
+    "index-unit-output-path" : "/RepAlign.build/Release-iphoneos/RepAlign.build/Objects-normal/arm64/LegislatorDataSource.o",
+    "llvm-bc" : "/Users/xilinliu/Projects/RepAlign/frontend/build/RepAlign.build/Release-iphoneos/RepAlign.build/Objects-normal/arm64/LegislatorDataSource.bc",
+    "object" : "/Users/xilinliu/Projects/RepAlign/frontend/build/RepAlign.build/Release-iphoneos/RepAlign.build/Objects-normal/arm64/LegislatorDataSource.o"
+  },
+  "/Users/xilinliu/Projects/RepAlign/frontend/RepAlign/Mappers/LegislatorMapper.swift" : {
+    "index-unit-output-path" : "/RepAlign.build/Release-iphoneos/RepAlign.build/Objects-normal/arm64/LegislatorMapper.o",
+    "llvm-bc" : "/Users/xilinliu/Projects/RepAlign/frontend/build/RepAlign.build/Release-iphoneos/RepAlign.build/Objects-normal/arm64/LegislatorMapper.bc",
+    "object" : "/Users/xilinliu/Projects/RepAlign/frontend/build/RepAlign.build/Release-iphoneos/RepAlign.build/Objects-normal/arm64/LegislatorMapper.o"
+  },
+  "/Users/xilinliu/Projects/RepAlign/frontend/RepAlign/MockData/MockDataProvider.swift" : {
+    "index-unit-output-path" : "/RepAlign.build/Release-iphoneos/RepAlign.build/Objects-normal/arm64/MockDataProvider.o",
+    "llvm-bc" : "/Users/xilinliu/Projects/RepAlign/frontend/build/RepAlign.build/Release-iphoneos/RepAlign.build/Objects-normal/arm64/MockDataProvider.bc",
+    "object" : "/Users/xilinliu/Projects/RepAlign/frontend/build/RepAlign.build/Release-iphoneos/RepAlign.build/Objects-normal/arm64/MockDataProvider.o"
+  },
+  "/Users/xilinliu/Projects/RepAlign/frontend/RepAlign/Models/CampaignContributor.swift" : {
+    "index-unit-output-path" : "/RepAlign.build/Release-iphoneos/RepAlign.build/Objects-normal/arm64/CampaignContributor.o",
+    "llvm-bc" : "/Users/xilinliu/Projects/RepAlign/frontend/build/RepAlign.build/Release-iphoneos/RepAlign.build/Objects-normal/arm64/CampaignContributor.bc",
+    "object" : "/Users/xilinliu/Projects/RepAlign/frontend/build/RepAlign.build/Release-iphoneos/RepAlign.build/Objects-normal/arm64/CampaignContributor.o"
+  },
+  "/Users/xilinliu/Projects/RepAlign/frontend/RepAlign/Models/CitizenProfile.swift" : {
+    "index-unit-output-path" : "/RepAlign.build/Release-iphoneos/RepAlign.build/Objects-normal/arm64/CitizenProfile.o",
+    "llvm-bc" : "/Users/xilinliu/Projects/RepAlign/frontend/build/RepAlign.build/Release-iphoneos/RepAlign.build/Objects-normal/arm64/CitizenProfile.bc",
+    "object" : "/Users/xilinliu/Projects/RepAlign/frontend/build/RepAlign.build/Release-iphoneos/RepAlign.build/Objects-normal/arm64/CitizenProfile.o"
+  },
+  "/Users/xilinliu/Projects/RepAlign/frontend/RepAlign/Models/CurrentUser.swift" : {
+    "index-unit-output-path" : "/RepAlign.build/Release-iphoneos/RepAlign.build/Objects-normal/arm64/CurrentUser.o",
+    "llvm-bc" : "/Users/xilinliu/Projects/RepAlign/frontend/build/RepAlign.build/Release-iphoneos/RepAlign.build/Objects-normal/arm64/CurrentUser.bc",
+    "object" : "/Users/xilinliu/Projects/RepAlign/frontend/build/RepAlign.build/Release-iphoneos/RepAlign.build/Objects-normal/arm64/CurrentUser.o"
+  },
+  "/Users/xilinliu/Projects/RepAlign/frontend/RepAlign/Models/Event.swift" : {
+    "index-unit-output-path" : "/RepAlign.build/Release-iphoneos/RepAlign.build/Objects-normal/arm64/Event.o",
+    "llvm-bc" : "/Users/xilinliu/Projects/RepAlign/frontend/build/RepAlign.build/Release-iphoneos/RepAlign.build/Objects-normal/arm64/Event.bc",
+    "object" : "/Users/xilinliu/Projects/RepAlign/frontend/build/RepAlign.build/Release-iphoneos/RepAlign.build/Objects-normal/arm64/Event.o"
+  },
+  "/Users/xilinliu/Projects/RepAlign/frontend/RepAlign/Models/FeedItem.swift" : {
+    "index-unit-output-path" : "/RepAlign.build/Release-iphoneos/RepAlign.build/Objects-normal/arm64/FeedItem.o",
+    "llvm-bc" : "/Users/xilinliu/Projects/RepAlign/frontend/build/RepAlign.build/Release-iphoneos/RepAlign.build/Objects-normal/arm64/FeedItem.bc",
+    "object" : "/Users/xilinliu/Projects/RepAlign/frontend/build/RepAlign.build/Release-iphoneos/RepAlign.build/Objects-normal/arm64/FeedItem.o"
+  },
+  "/Users/xilinliu/Projects/RepAlign/frontend/RepAlign/Models/Follow.swift" : {
+    "index-unit-output-path" : "/RepAlign.build/Release-iphoneos/RepAlign.build/Objects-normal/arm64/Follow.o",
+    "llvm-bc" : "/Users/xilinliu/Projects/RepAlign/frontend/build/RepAlign.build/Release-iphoneos/RepAlign.build/Objects-normal/arm64/Follow.bc",
+    "object" : "/Users/xilinliu/Projects/RepAlign/frontend/build/RepAlign.build/Release-iphoneos/RepAlign.build/Objects-normal/arm64/Follow.o"
+  },
+  "/Users/xilinliu/Projects/RepAlign/frontend/RepAlign/Models/LegislatorProfile.swift" : {
+    "index-unit-output-path" : "/RepAlign.build/Release-iphoneos/RepAlign.build/Objects-normal/arm64/LegislatorProfile.o",
+    "llvm-bc" : "/Users/xilinliu/Projects/RepAlign/frontend/build/RepAlign.build/Release-iphoneos/RepAlign.build/Objects-normal/arm64/LegislatorProfile.bc",
+    "object" : "/Users/xilinliu/Projects/RepAlign/frontend/build/RepAlign.build/Release-iphoneos/RepAlign.build/Objects-normal/arm64/LegislatorProfile.o"
+  },
+  "/Users/xilinliu/Projects/RepAlign/frontend/RepAlign/Models/Post.swift" : {
+    "index-unit-output-path" : "/RepAlign.build/Release-iphoneos/RepAlign.build/Objects-normal/arm64/Post.o",
+    "llvm-bc" : "/Users/xilinliu/Projects/RepAlign/frontend/build/RepAlign.build/Release-iphoneos/RepAlign.build/Objects-normal/arm64/Post.bc",
+    "object" : "/Users/xilinliu/Projects/RepAlign/frontend/build/RepAlign.build/Release-iphoneos/RepAlign.build/Objects-normal/arm64/Post.o"
+  },
+  "/Users/xilinliu/Projects/RepAlign/frontend/RepAlign/Models/User.swift" : {
+    "index-unit-output-path" : "/RepAlign.build/Release-iphoneos/RepAlign.build/Objects-normal/arm64/User.o",
+    "llvm-bc" : "/Users/xilinliu/Projects/RepAlign/frontend/build/RepAlign.build/Release-iphoneos/RepAlign.build/Objects-normal/arm64/User.bc",
+    "object" : "/Users/xilinliu/Projects/RepAlign/frontend/build/RepAlign.build/Release-iphoneos/RepAlign.build/Objects-normal/arm64/User.o"
+  },
+  "/Users/xilinliu/Projects/RepAlign/frontend/RepAlign/Models/VotingRecord.swift" : {
+    "index-unit-output-path" : "/RepAlign.build/Release-iphoneos/RepAlign.build/Objects-normal/arm64/VotingRecord.o",
+    "llvm-bc" : "/Users/xilinliu/Projects/RepAlign/frontend/build/RepAlign.build/Release-iphoneos/RepAlign.build/Objects-normal/arm64/VotingRecord.bc",
+    "object" : "/Users/xilinliu/Projects/RepAlign/frontend/build/RepAlign.build/Release-iphoneos/RepAlign.build/Objects-normal/arm64/VotingRecord.o"
+  },
+  "/Users/xilinliu/Projects/RepAlign/frontend/RepAlign/RepAlignApp.swift" : {
+    "index-unit-output-path" : "/RepAlign.build/Release-iphoneos/RepAlign.build/Objects-normal/arm64/RepAlignApp.o",
+    "llvm-bc" : "/Users/xilinliu/Projects/RepAlign/frontend/build/RepAlign.build/Release-iphoneos/RepAlign.build/Objects-normal/arm64/RepAlignApp.bc",
+    "object" : "/Users/xilinliu/Projects/RepAlign/frontend/build/RepAlign.build/Release-iphoneos/RepAlign.build/Objects-normal/arm64/RepAlignApp.o"
+  },
+  "/Users/xilinliu/Projects/RepAlign/frontend/RepAlign/Repositories/FeedRepository.swift" : {
+    "index-unit-output-path" : "/RepAlign.build/Release-iphoneos/RepAlign.build/Objects-normal/arm64/FeedRepository.o",
+    "llvm-bc" : "/Users/xilinliu/Projects/RepAlign/frontend/build/RepAlign.build/Release-iphoneos/RepAlign.build/Objects-normal/arm64/FeedRepository.bc",
+    "object" : "/Users/xilinliu/Projects/RepAlign/frontend/build/RepAlign.build/Release-iphoneos/RepAlign.build/Objects-normal/arm64/FeedRepository.o"
+  },
+  "/Users/xilinliu/Projects/RepAlign/frontend/RepAlign/Repositories/LegislatorRepository.swift" : {
+    "index-unit-output-path" : "/RepAlign.build/Release-iphoneos/RepAlign.build/Objects-normal/arm64/LegislatorRepository.o",
+    "llvm-bc" : "/Users/xilinliu/Projects/RepAlign/frontend/build/RepAlign.build/Release-iphoneos/RepAlign.build/Objects-normal/arm64/LegislatorRepository.bc",
+    "object" : "/Users/xilinliu/Projects/RepAlign/frontend/build/RepAlign.build/Release-iphoneos/RepAlign.build/Objects-normal/arm64/LegislatorRepository.o"
+  },
+  "/Users/xilinliu/Projects/RepAlign/frontend/RepAlign/Services/CongressAPIService.swift" : {
+    "index-unit-output-path" : "/RepAlign.build/Release-iphoneos/RepAlign.build/Objects-normal/arm64/CongressAPIService.o",
+    "llvm-bc" : "/Users/xilinliu/Projects/RepAlign/frontend/build/RepAlign.build/Release-iphoneos/RepAlign.build/Objects-normal/arm64/CongressAPIService.bc",
+    "object" : "/Users/xilinliu/Projects/RepAlign/frontend/build/RepAlign.build/Release-iphoneos/RepAlign.build/Objects-normal/arm64/CongressAPIService.o"
+  },
+  "/Users/xilinliu/Projects/RepAlign/frontend/RepAlign/Services/EventService.swift" : {
+    "index-unit-output-path" : "/RepAlign.build/Release-iphoneos/RepAlign.build/Objects-normal/arm64/EventService.o",
+    "llvm-bc" : "/Users/xilinliu/Projects/RepAlign/frontend/build/RepAlign.build/Release-iphoneos/RepAlign.build/Objects-normal/arm64/EventService.bc",
+    "object" : "/Users/xilinliu/Projects/RepAlign/frontend/build/RepAlign.build/Release-iphoneos/RepAlign.build/Objects-normal/arm64/EventService.o"
+  },
+  "/Users/xilinliu/Projects/RepAlign/frontend/RepAlign/Services/PostsApiService.swift" : {
+    "index-unit-output-path" : "/RepAlign.build/Release-iphoneos/RepAlign.build/Objects-normal/arm64/PostsApiService.o",
+    "llvm-bc" : "/Users/xilinliu/Projects/RepAlign/frontend/build/RepAlign.build/Release-iphoneos/RepAlign.build/Objects-normal/arm64/PostsApiService.bc",
+    "object" : "/Users/xilinliu/Projects/RepAlign/frontend/build/RepAlign.build/Release-iphoneos/RepAlign.build/Objects-normal/arm64/PostsApiService.o"
+  },
+  "/Users/xilinliu/Projects/RepAlign/frontend/RepAlign/Services/UserService.swift" : {
+    "index-unit-output-path" : "/RepAlign.build/Release-iphoneos/RepAlign.build/Objects-normal/arm64/UserService.o",
+    "llvm-bc" : "/Users/xilinliu/Projects/RepAlign/frontend/build/RepAlign.build/Release-iphoneos/RepAlign.build/Objects-normal/arm64/UserService.bc",
+    "object" : "/Users/xilinliu/Projects/RepAlign/frontend/build/RepAlign.build/Release-iphoneos/RepAlign.build/Objects-normal/arm64/UserService.o"
+  },
+  "/Users/xilinliu/Projects/RepAlign/frontend/RepAlign/ViewModels/LegislatorListViewModel.swift" : {
+    "index-unit-output-path" : "/RepAlign.build/Release-iphoneos/RepAlign.build/Objects-normal/arm64/LegislatorListViewModel.o",
+    "llvm-bc" : "/Users/xilinliu/Projects/RepAlign/frontend/build/RepAlign.build/Release-iphoneos/RepAlign.build/Objects-normal/arm64/LegislatorListViewModel.bc",
+    "object" : "/Users/xilinliu/Projects/RepAlign/frontend/build/RepAlign.build/Release-iphoneos/RepAlign.build/Objects-normal/arm64/LegislatorListViewModel.o"
+  },
+  "/Users/xilinliu/Projects/RepAlign/frontend/RepAlign/Views/CampaignContributorsView.swift" : {
+    "index-unit-output-path" : "/RepAlign.build/Release-iphoneos/RepAlign.build/Objects-normal/arm64/CampaignContributorsView.o",
+    "llvm-bc" : "/Users/xilinliu/Projects/RepAlign/frontend/build/RepAlign.build/Release-iphoneos/RepAlign.build/Objects-normal/arm64/CampaignContributorsView.bc",
+    "object" : "/Users/xilinliu/Projects/RepAlign/frontend/build/RepAlign.build/Release-iphoneos/RepAlign.build/Objects-normal/arm64/CampaignContributorsView.o"
+  },
+  "/Users/xilinliu/Projects/RepAlign/frontend/RepAlign/Views/CongressDataTestView.swift" : {
+    "index-unit-output-path" : "/RepAlign.build/Release-iphoneos/RepAlign.build/Objects-normal/arm64/CongressDataTestView.o",
+    "llvm-bc" : "/Users/xilinliu/Projects/RepAlign/frontend/build/RepAlign.build/Release-iphoneos/RepAlign.build/Objects-normal/arm64/CongressDataTestView.bc",
+    "object" : "/Users/xilinliu/Projects/RepAlign/frontend/build/RepAlign.build/Release-iphoneos/RepAlign.build/Objects-normal/arm64/CongressDataTestView.o"
+  },
+  "/Users/xilinliu/Projects/RepAlign/frontend/RepAlign/Views/CongressSyncView.swift" : {
+    "index-unit-output-path" : "/RepAlign.build/Release-iphoneos/RepAlign.build/Objects-normal/arm64/CongressSyncView.o",
+    "llvm-bc" : "/Users/xilinliu/Projects/RepAlign/frontend/build/RepAlign.build/Release-iphoneos/RepAlign.build/Objects-normal/arm64/CongressSyncView.bc",
+    "object" : "/Users/xilinliu/Projects/RepAlign/frontend/build/RepAlign.build/Release-iphoneos/RepAlign.build/Objects-normal/arm64/CongressSyncView.o"
+  },
+  "/Users/xilinliu/Projects/RepAlign/frontend/RepAlign/Views/CreateEventView.swift" : {
+    "index-unit-output-path" : "/RepAlign.build/Release-iphoneos/RepAlign.build/Objects-normal/arm64/CreateEventView.o",
+    "llvm-bc" : "/Users/xilinliu/Projects/RepAlign/frontend/build/RepAlign.build/Release-iphoneos/RepAlign.build/Objects-normal/arm64/CreateEventView.bc",
+    "object" : "/Users/xilinliu/Projects/RepAlign/frontend/build/RepAlign.build/Release-iphoneos/RepAlign.build/Objects-normal/arm64/CreateEventView.o"
+  },
+  "/Users/xilinliu/Projects/RepAlign/frontend/RepAlign/Views/EventDetailView.swift" : {
+    "index-unit-output-path" : "/RepAlign.build/Release-iphoneos/RepAlign.build/Objects-normal/arm64/EventDetailView.o",
+    "llvm-bc" : "/Users/xilinliu/Projects/RepAlign/frontend/build/RepAlign.build/Release-iphoneos/RepAlign.build/Objects-normal/arm64/EventDetailView.bc",
+    "object" : "/Users/xilinliu/Projects/RepAlign/frontend/build/RepAlign.build/Release-iphoneos/RepAlign.build/Objects-normal/arm64/EventDetailView.o"
+  },
+  "/Users/xilinliu/Projects/RepAlign/frontend/RepAlign/Views/FeedCard.swift" : {
+    "index-unit-output-path" : "/RepAlign.build/Release-iphoneos/RepAlign.build/Objects-normal/arm64/FeedCard.o",
+    "llvm-bc" : "/Users/xilinliu/Projects/RepAlign/frontend/build/RepAlign.build/Release-iphoneos/RepAlign.build/Objects-normal/arm64/FeedCard.bc",
+    "object" : "/Users/xilinliu/Projects/RepAlign/frontend/build/RepAlign.build/Release-iphoneos/RepAlign.build/Objects-normal/arm64/FeedCard.o"
+  },
+  "/Users/xilinliu/Projects/RepAlign/frontend/RepAlign/Views/FeedView.swift" : {
+    "index-unit-output-path" : "/RepAlign.build/Release-iphoneos/RepAlign.build/Objects-normal/arm64/FeedView.o",
+    "llvm-bc" : "/Users/xilinliu/Projects/RepAlign/frontend/build/RepAlign.build/Release-iphoneos/RepAlign.build/Objects-normal/arm64/FeedView.bc",
+    "object" : "/Users/xilinliu/Projects/RepAlign/frontend/build/RepAlign.build/Release-iphoneos/RepAlign.build/Objects-normal/arm64/FeedView.o"
+  },
+  "/Users/xilinliu/Projects/RepAlign/frontend/RepAlign/Views/LevelBadgeView.swift" : {
+    "index-unit-output-path" : "/RepAlign.build/Release-iphoneos/RepAlign.build/Objects-normal/arm64/LevelBadgeView.o",
+    "llvm-bc" : "/Users/xilinliu/Projects/RepAlign/frontend/build/RepAlign.build/Release-iphoneos/RepAlign.build/Objects-normal/arm64/LevelBadgeView.bc",
+    "object" : "/Users/xilinliu/Projects/RepAlign/frontend/build/RepAlign.build/Release-iphoneos/RepAlign.build/Objects-normal/arm64/LevelBadgeView.o"
+  },
+  "/Users/xilinliu/Projects/RepAlign/frontend/RepAlign/Views/MainTabView.swift" : {
+    "index-unit-output-path" : "/RepAlign.build/Release-iphoneos/RepAlign.build/Objects-normal/arm64/MainTabView.o",
+    "llvm-bc" : "/Users/xilinliu/Projects/RepAlign/frontend/build/RepAlign.build/Release-iphoneos/RepAlign.build/Objects-normal/arm64/MainTabView.bc",
+    "object" : "/Users/xilinliu/Projects/RepAlign/frontend/build/RepAlign.build/Release-iphoneos/RepAlign.build/Objects-normal/arm64/MainTabView.o"
+  },
+  "/Users/xilinliu/Projects/RepAlign/frontend/RepAlign/Views/MessagesView.swift" : {
+    "index-unit-output-path" : "/RepAlign.build/Release-iphoneos/RepAlign.build/Objects-normal/arm64/MessagesView.o",
+    "llvm-bc" : "/Users/xilinliu/Projects/RepAlign/frontend/build/RepAlign.build/Release-iphoneos/RepAlign.build/Objects-normal/arm64/MessagesView.bc",
+    "object" : "/Users/xilinliu/Projects/RepAlign/frontend/build/RepAlign.build/Release-iphoneos/RepAlign.build/Objects-normal/arm64/MessagesView.o"
+  },
+  "/Users/xilinliu/Projects/RepAlign/frontend/RepAlign/Views/MyProfileView.swift" : {
+    "index-unit-output-path" : "/RepAlign.build/Release-iphoneos/RepAlign.build/Objects-normal/arm64/MyProfileView.o",
+    "llvm-bc" : "/Users/xilinliu/Projects/RepAlign/frontend/build/RepAlign.build/Release-iphoneos/RepAlign.build/Objects-normal/arm64/MyProfileView.bc",
+    "object" : "/Users/xilinliu/Projects/RepAlign/frontend/build/RepAlign.build/Release-iphoneos/RepAlign.build/Objects-normal/arm64/MyProfileView.o"
+  },
+  "/Users/xilinliu/Projects/RepAlign/frontend/RepAlign/Views/NotificationsView.swift" : {
+    "index-unit-output-path" : "/RepAlign.build/Release-iphoneos/RepAlign.build/Objects-normal/arm64/NotificationsView.o",
+    "llvm-bc" : "/Users/xilinliu/Projects/RepAlign/frontend/build/RepAlign.build/Release-iphoneos/RepAlign.build/Objects-normal/arm64/NotificationsView.bc",
+    "object" : "/Users/xilinliu/Projects/RepAlign/frontend/build/RepAlign.build/Release-iphoneos/RepAlign.build/Objects-normal/arm64/NotificationsView.o"
+  },
+  "/Users/xilinliu/Projects/RepAlign/frontend/RepAlign/Views/PostDetailView.swift" : {
+    "index-unit-output-path" : "/RepAlign.build/Release-iphoneos/RepAlign.build/Objects-normal/arm64/PostDetailView.o",
+    "llvm-bc" : "/Users/xilinliu/Projects/RepAlign/frontend/build/RepAlign.build/Release-iphoneos/RepAlign.build/Objects-normal/arm64/PostDetailView.bc",
+    "object" : "/Users/xilinliu/Projects/RepAlign/frontend/build/RepAlign.build/Release-iphoneos/RepAlign.build/Objects-normal/arm64/PostDetailView.o"
+  },
+  "/Users/xilinliu/Projects/RepAlign/frontend/RepAlign/Views/ProfileAvatarView.swift" : {
+    "index-unit-output-path" : "/RepAlign.build/Release-iphoneos/RepAlign.build/Objects-normal/arm64/ProfileAvatarView.o",
+    "llvm-bc" : "/Users/xilinliu/Projects/RepAlign/frontend/build/RepAlign.build/Release-iphoneos/RepAlign.build/Objects-normal/arm64/ProfileAvatarView.bc",
+    "object" : "/Users/xilinliu/Projects/RepAlign/frontend/build/RepAlign.build/Release-iphoneos/RepAlign.build/Objects-normal/arm64/ProfileAvatarView.o"
+  },
+  "/Users/xilinliu/Projects/RepAlign/frontend/RepAlign/Views/ProfileListView.swift" : {
+    "index-unit-output-path" : "/RepAlign.build/Release-iphoneos/RepAlign.build/Objects-normal/arm64/ProfileListView.o",
+    "llvm-bc" : "/Users/xilinliu/Projects/RepAlign/frontend/build/RepAlign.build/Release-iphoneos/RepAlign.build/Objects-normal/arm64/ProfileListView.bc",
+    "object" : "/Users/xilinliu/Projects/RepAlign/frontend/build/RepAlign.build/Release-iphoneos/RepAlign.build/Objects-normal/arm64/ProfileListView.o"
+  },
+  "/Users/xilinliu/Projects/RepAlign/frontend/RepAlign/Views/ProfileView.swift" : {
+    "index-unit-output-path" : "/RepAlign.build/Release-iphoneos/RepAlign.build/Objects-normal/arm64/ProfileView.o",
+    "llvm-bc" : "/Users/xilinliu/Projects/RepAlign/frontend/build/RepAlign.build/Release-iphoneos/RepAlign.build/Objects-normal/arm64/ProfileView.bc",
+    "object" : "/Users/xilinliu/Projects/RepAlign/frontend/build/RepAlign.build/Release-iphoneos/RepAlign.build/Objects-normal/arm64/ProfileView.o"
+  },
+  "/Users/xilinliu/Projects/RepAlign/frontend/RepAlign/Views/RelatedLegislatorsView.swift" : {
+    "index-unit-output-path" : "/RepAlign.build/Release-iphoneos/RepAlign.build/Objects-normal/arm64/RelatedLegislatorsView.o",
+    "llvm-bc" : "/Users/xilinliu/Projects/RepAlign/frontend/build/RepAlign.build/Release-iphoneos/RepAlign.build/Objects-normal/arm64/RelatedLegislatorsView.bc",
+    "object" : "/Users/xilinliu/Projects/RepAlign/frontend/build/RepAlign.build/Release-iphoneos/RepAlign.build/Objects-normal/arm64/RelatedLegislatorsView.o"
+  },
+  "/Users/xilinliu/Projects/RepAlign/frontend/RepAlign/Views/SettingsView.swift" : {
+    "index-unit-output-path" : "/RepAlign.build/Release-iphoneos/RepAlign.build/Objects-normal/arm64/SettingsView.o",
+    "llvm-bc" : "/Users/xilinliu/Projects/RepAlign/frontend/build/RepAlign.build/Release-iphoneos/RepAlign.build/Objects-normal/arm64/SettingsView.bc",
+    "object" : "/Users/xilinliu/Projects/RepAlign/frontend/build/RepAlign.build/Release-iphoneos/RepAlign.build/Objects-normal/arm64/SettingsView.o"
+  },
+  "/Users/xilinliu/Projects/RepAlign/frontend/RepAlign/Views/TakeActionView.swift" : {
+    "index-unit-output-path" : "/RepAlign.build/Release-iphoneos/RepAlign.build/Objects-normal/arm64/TakeActionView.o",
+    "llvm-bc" : "/Users/xilinliu/Projects/RepAlign/frontend/build/RepAlign.build/Release-iphoneos/RepAlign.build/Objects-normal/arm64/TakeActionView.bc",
+    "object" : "/Users/xilinliu/Projects/RepAlign/frontend/build/RepAlign.build/Release-iphoneos/RepAlign.build/Objects-normal/arm64/TakeActionView.o"
+  },
+  "/Users/xilinliu/Projects/RepAlign/frontend/RepAlign/Views/UpcomingEventsView.swift" : {
+    "index-unit-output-path" : "/RepAlign.build/Release-iphoneos/RepAlign.build/Objects-normal/arm64/UpcomingEventsView.o",
+    "llvm-bc" : "/Users/xilinliu/Projects/RepAlign/frontend/build/RepAlign.build/Release-iphoneos/RepAlign.build/Objects-normal/arm64/UpcomingEventsView.bc",
+    "object" : "/Users/xilinliu/Projects/RepAlign/frontend/build/RepAlign.build/Release-iphoneos/RepAlign.build/Objects-normal/arm64/UpcomingEventsView.o"
+  },
+  "/Users/xilinliu/Projects/RepAlign/frontend/RepAlign/Views/VotingRecordView.swift" : {
+    "index-unit-output-path" : "/RepAlign.build/Release-iphoneos/RepAlign.build/Objects-normal/arm64/VotingRecordView.o",
+    "llvm-bc" : "/Users/xilinliu/Projects/RepAlign/frontend/build/RepAlign.build/Release-iphoneos/RepAlign.build/Objects-normal/arm64/VotingRecordView.bc",
+    "object" : "/Users/xilinliu/Projects/RepAlign/frontend/build/RepAlign.build/Release-iphoneos/RepAlign.build/Objects-normal/arm64/VotingRecordView.o"
+  },
+  "/Users/xilinliu/Projects/RepAlign/frontend/build/RepAlign.build/Release-iphoneos/RepAlign.build/DerivedSources/GeneratedAssetSymbols.swift" : {
+    "index-unit-output-path" : "/RepAlign.build/Release-iphoneos/RepAlign.build/Objects-normal/arm64/GeneratedAssetSymbols.o",
+    "llvm-bc" : "/Users/xilinliu/Projects/RepAlign/frontend/build/RepAlign.build/Release-iphoneos/RepAlign.build/Objects-normal/arm64/GeneratedAssetSymbols.bc",
+    "object" : "/Users/xilinliu/Projects/RepAlign/frontend/build/RepAlign.build/Release-iphoneos/RepAlign.build/Objects-normal/arm64/GeneratedAssetSymbols.o"
+  }
+}

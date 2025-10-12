@@ -49,10 +49,19 @@ class SwiftDataLegislatorCache: LegislatorCacheProtocol {
 
     func getAllLegislators() -> [LegislatorProfile] {
         do {
-            let descriptor = FetchDescriptor<LegislatorProfile>(
+            let legislatorDescriptor = FetchDescriptor<LegislatorProfile>(
                 sortBy: [SortDescriptor(\.userId)]
             )
-            let legislators = try context.fetch(descriptor)
+            let userDescriptor = FetchDescriptor<User>()
+
+            let legislators = try context.fetch(legislatorDescriptor)
+            let users = try context.fetch(userDescriptor)
+
+            // Link users to legislators
+            for legislator in legislators {
+                legislator.user = users.first { $0.id == legislator.userId }
+            }
+
             print("DEBUG: Successfully fetched \(legislators.count) legislators from cache")
             return legislators
         } catch {
@@ -71,9 +80,19 @@ class SwiftDataLegislatorCache: LegislatorCacheProtocol {
     func saveLegislators(_ legislators: [LegislatorProfile]) {
         // Clear existing legislators first
         clearLegislators()
+        clearUsers() // Also clear existing legislator users
 
-        // Insert new legislators
+        // Insert new legislators and their users
         for legislator in legislators {
+            // Insert the user first if it exists
+            if let user = legislator.user {
+                context.insert(user)
+            }
+
+            // Reset the user property to avoid SwiftData relationship issues
+            legislator.user = nil
+
+            // Insert the legislator profile
             context.insert(legislator)
         }
 
@@ -115,7 +134,7 @@ class SwiftDataLegislatorCache: LegislatorCacheProtocol {
         }
 
         let timeSinceLastSync = Date().timeIntervalSince(lastSync)
-        return timeSinceLastSync > AppConfig.cacheRefreshInterval
+        return timeSinceLastSync > AppConfig.shared.cacheRefreshInterval
     }
 
     // MARK: - Private Methods
@@ -125,6 +144,16 @@ class SwiftDataLegislatorCache: LegislatorCacheProtocol {
         let legislators = (try? context.fetch(descriptor)) ?? []
         for legislator in legislators {
             context.delete(legislator)
+        }
+    }
+
+    private func clearUsers() {
+        // Fetch all users and filter manually since SwiftData predicates don't work well with enums
+        let descriptor = FetchDescriptor<User>()
+        let allUsers = (try? context.fetch(descriptor)) ?? []
+        let legislatorUsers = allUsers.filter { $0.userType == .legislator }
+        for user in legislatorUsers {
+            context.delete(user)
         }
     }
 
