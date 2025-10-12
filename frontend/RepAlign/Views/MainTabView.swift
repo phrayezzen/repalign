@@ -8,38 +8,24 @@ struct MainTabView: View {
         TabView(selection: $selectedTab) {
             FeedView()
                 .tabItem {
-                    Image(systemName: "house")
+                    Image(systemName: "house.fill")
                     Text("Feed")
                 }
                 .tag(0)
 
-            ProfileListView()
+            TakeActionView()
                 .tabItem {
-                    Image(systemName: "person.2")
-                    Text("Profiles")
+                    Image(systemName: "hand.raised.fill")
+                    Text("Take Action")
                 }
                 .tag(1)
 
-            NotificationsView()
-                .tabItem {
-                    Image(systemName: "bell")
-                    Text("Notifications")
-                }
-                .tag(2)
-
-            MessagesView()
-                .tabItem {
-                    Image(systemName: "message")
-                    Text("Messages")
-                }
-                .tag(3)
-
             MyProfileView()
                 .tabItem {
-                    Image(systemName: "person.circle")
-                    Text("My Profile")
+                    Image(systemName: "person.circle.fill")
+                    Text("Profile")
                 }
-                .tag(4)
+                .tag(2)
         }
         .accentColor(.red)
     }

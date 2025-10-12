@@ -19,7 +19,7 @@ class LegislatorRepository: LegislatorRepositoryProtocol {
 
     init(dataSource: LegislatorDataSourceProtocol? = nil, cache: LegislatorCacheProtocol? = nil) {
         // Dependency injection for easy testing and switching
-        switch AppConfig.dataSource {
+        switch AppConfig.shared.dataSource {
         case .congressAPI:
             self.dataSource = dataSource ?? CongressAPIDataSource()
         case .customBackend:
@@ -32,17 +32,24 @@ class LegislatorRepository: LegislatorRepositoryProtocol {
     }
 
     func fetchAllLegislators() async throws -> [LegislatorProfile] {
+        print("DEBUG: fetchAllLegislators() called")
+        print("DEBUG: Data source type: \(AppConfig.shared.dataSource)")
+
         // Try cache first
         let cachedLegislators = getCachedLegislators()
 
         // If cache is fresh, return it
         if !shouldRefreshData() && !cachedLegislators.isEmpty {
+            print("DEBUG: Using cached data - \(cachedLegislators.count) legislators")
             return cachedLegislators
         }
 
         // Otherwise, fetch from remote and cache
+        print("DEBUG: Cache is stale or empty, fetching from backend")
         try await syncLegislators()
-        return getCachedLegislators()
+        let legislators = getCachedLegislators()
+        print("DEBUG: After sync, got \(legislators.count) legislators from cache")
+        return legislators
     }
 
     func fetchLegislator(bioguideId: String) async throws -> LegislatorProfile? {
@@ -61,9 +68,12 @@ class LegislatorRepository: LegislatorRepositoryProtocol {
     }
 
     func syncLegislators() async throws {
+        print("DEBUG: syncLegislators() called - fetching from data source")
         let legislators = try await dataSource.fetchAllCurrentLegislators()
+        print("DEBUG: Fetched \(legislators.count) legislators from data source")
         cache.saveLegislators(legislators)
         cache.updateLastSyncDate()
+        print("DEBUG: Saved legislators to cache and updated sync date")
     }
 
     func searchLegislators(query: String) async -> [LegislatorProfile] {

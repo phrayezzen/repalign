@@ -1,0 +1,12 @@
+{
+  "/Users/xilinliu/Projects/RepAlign/frontend/RepAlign/Config/AppConfig.swift" : {
+    "abi-baseline-json" : "/Users/xilinliu/Projects/RepAlign/frontend/build/RepAlign.build/Release-iphoneos/RepAlign.build/Objects-normal/arm64/RepAlign.abi.json",
+    "const-values" : "/Users/xilinliu/Projects/RepAlign/frontend/build/RepAlign.build/Release-iphoneos/RepAlign.build/Objects-normal/arm64/RepAlign-primary.swiftconstvalues",
+    "dependencies" : "/Users/xilinliu/Projects/RepAlign/frontend/build/RepAlign.build/Release-iphoneos/RepAlign.build/Objects-normal/arm64/RepAlign-primary.d",
+    "diagnostics" : "/Users/xilinliu/Projects/RepAlign/frontend/build/RepAlign.build/Release-iphoneos/RepAlign.build/Objects-normal/arm64/RepAlign-primary.dia",
+    "objc-header" : "/Users/xilinliu/Projects/RepAlign/frontend/build/RepAlign.build/Release-iphoneos/RepAlign.build/Objects-normal/arm64/RepAlign-Swift.h",
+    "swiftdoc" : "/Users/xilinliu/Projects/RepAlign/frontend/build/RepAlign.build/Release-iphoneos/RepAlign.build/Objects-normal/arm64/RepAlign.swiftdoc",
+    "swiftmodule" : "/Users/xilinliu/Projects/RepAlign/frontend/build/RepAlign.build/Release-iphoneos/RepAlign.build/Objects-normal/arm64/RepAlign.swiftmodule",
+    "swiftsourceinfo" : "/Users/xilinliu/Projects/RepAlign/frontend/build/RepAlign.build/Release-iphoneos/RepAlign.build/Objects-normal/arm64/RepAlign.swiftsourceinfo"
+  }
+}

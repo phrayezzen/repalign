@@ -10,7 +10,9 @@ import {
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { ThrottlerGuard } from '@nestjs/throttler';
+import { JwtService } from '@nestjs/jwt';
 import { AuthService } from './auth.service';
+import { TokenBlacklistService } from './token-blacklist.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 import { AuthResponseDto } from './dto/auth-response.dto';
@@ -23,7 +25,11 @@ import { CurrentUser } from './decorators/current-user.decorator';
 @Controller('auth')
 @UseGuards(ThrottlerGuard) // Rate limiting for auth endpoints
 export class AuthController {
-  constructor(private authService: AuthService) {}
+  constructor(
+    private authService: AuthService,
+    private tokenBlacklistService: TokenBlacklistService,
+    private jwtService: JwtService,
+  ) {}
 
   @Public()
   @Post('register')
@@ -81,7 +87,9 @@ export class AuthController {
       email: user.email,
       displayName: user.displayName,
       userType: user.userType,
+      profileImageUrl: user.profileImageUrl,
       isVerified: user.isVerified,
+      onboardingCompleted: user.onboardingCompleted,
     };
   }
 
@@ -91,9 +99,26 @@ export class AuthController {
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Logout user' })
   @ApiResponse({ status: 200, description: 'User successfully logged out' })
-  async logout(@CurrentUser() user: any) {
-    // In a production app, you might want to blacklist the token
-    // For now, we'll just return success
+  async logout(@Request() req) {
+    // Extract token from Authorization header
+    const token = req.headers.authorization?.replace('Bearer ', '');
+
+    if (token) {
+      try {
+        // Decode token to get expiration
+        const decoded: any = this.jwtService.decode(token);
+
+        if (decoded && decoded.exp) {
+          // Calculate TTL and blacklist the token
+          const ttl = this.tokenBlacklistService.calculateTTL(decoded.exp);
+          await this.tokenBlacklistService.blacklistToken(token, ttl);
+        }
+      } catch (error) {
+        // Token is invalid or expired, but that's okay for logout
+        console.error('Error blacklisting token:', error);
+      }
+    }
+
     return { message: 'Successfully logged out' };
   }
 }

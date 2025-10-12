@@ -1,0 +1,232 @@
+{
+  "source": "/Users/xilinliu/Projects/RepAlign/frontend/RepAlign/Views/ProfileView.swift",
+  "tables": {
+    "Localizable": [
+      {
+        "comment": "",
+        "key": "Civic Connector",
+        "location": {
+          "startingColumn": 34,
+          "startingLine": 140
+        }
+      },
+      {
+        "comment": "",
+        "key": "Following",
+        "location": {
+          "startingColumn": 40,
+          "startingLine": 177
+        }
+      },
+      {
+        "comment": "",
+        "key": "Follow",
+        "location": {
+          "startingColumn": 54,
+          "startingLine": 177
+        }
+      },
+      {
+        "comment": "",
+        "key": "Message",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 187
+        }
+      },
+      {
+        "comment": "",
+        "key": "Take Action",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 200
+        }
+      },
+      {
+        "comment": "",
+        "key": "Following",
+        "location": {
+          "startingColumn": 40,
+          "startingLine": 217
+        }
+      },
+      {
+        "comment": "",
+        "key": "Follow",
+        "location": {
+          "startingColumn": 54,
+          "startingLine": 217
+        }
+      },
+      {
+        "comment": "",
+        "key": "Donate",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 231
+        }
+      },
+      {
+        "comment": "",
+        "key": "Contact",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 244
+        }
+      },
+      {
+        "comment": "",
+        "key": "Take Action",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 258
+        }
+      },
+      {
+        "comment": "",
+        "key": "Civic Engagement Score",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 274
+        }
+      },
+      {
+        "comment": "",
+        "key": "%lld",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 279
+        }
+      },
+      {
+        "comment": "",
+        "key": "points",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 284
+        }
+      },
+      {
+        "comment": "",
+        "key": "Next Level",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 298
+        }
+      },
+      {
+        "comment": "",
+        "key": "%lld points to go",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 300
+        }
+      },
+      {
+        "comment": "",
+        "key": "RepAlign Score",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 320
+        }
+      },
+      {
+        "comment": "",
+        "key": "%lld%%",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 325
+        }
+      },
+      {
+        "comment": "",
+        "key": "%lld years in office",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 357
+        }
+      },
+      {
+        "comment": "",
+        "key": "%lld",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 385
+        }
+      },
+      {
+        "comment": "",
+        "key": "%lld%%",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 406
+        }
+      },
+      {
+        "comment": "",
+        "key": "Error",
+        "location": {
+          "startingColumn": 16,
+          "startingLine": 499
+        }
+      },
+      {
+        "comment": "",
+        "key": "Recent Activity",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 428
+        }
+      },
+      {
+        "comment": "",
+        "key": "%lld posts",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 436
+        }
+      },
+      {
+        "comment": "",
+        "key": "Loading activity...",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 447
+        }
+      },
+      {
+        "comment": "",
+        "key": "No posts yet",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 458
+        }
+      },
+      {
+        "comment": "",
+        "key": "This user hasn't shared any content",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 462
+        }
+      },
+      {
+        "comment": "",
+        "key": "View All Posts (%lld)",
+        "location": {
+          "startingColumn": 34,
+          "startingLine": 479
+        }
+      },
+      {
+        "comment": "",
+        "key": "OK",
+        "location": {
+          "startingColumn": 20,
+          "startingLine": 500
+        }
+      }
+    ]
+  },
+  "version": 1
+}

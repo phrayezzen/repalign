@@ -33,7 +33,10 @@ export class CitizenProfile {
     default: '',
     transformer: {
       to: (value: BadgeType[]) => value?.join(',') || '',
-      from: (value: string) => value ? value.split(',').filter(Boolean) as BadgeType[] : [],
+      from: (value: string | BadgeType[]) => {
+        if (Array.isArray(value)) return value;
+        return value ? value.split(',').filter(Boolean) as BadgeType[] : [];
+      },
     },
   })
   badges: BadgeType[];

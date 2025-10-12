@@ -1,0 +1,32 @@
+{
+  "source": "/Users/xilinliu/Projects/RepAlign/frontend/RepAlign/Views/MainTabView.swift",
+  "tables": {
+    "Localizable": [
+      {
+        "comment": "",
+        "key": "Feed",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 12
+        }
+      },
+      {
+        "comment": "",
+        "key": "Take Action",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 19
+        }
+      },
+      {
+        "comment": "",
+        "key": "Profile",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 26
+        }
+      }
+    ]
+  },
+  "version": 1
+}

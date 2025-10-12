@@ -1,0 +1,168 @@
+{
+  "source": "/Users/xilinliu/Projects/RepAlign/frontend/RepAlign/Views/EventDetailView.swift",
+  "tables": {
+    "Localizable": [
+      {
+        "comment": "",
+        "key": "Error",
+        "location": {
+          "startingColumn": 16,
+          "startingLine": 31
+        }
+      },
+      {
+        "comment": "",
+        "key": "OK",
+        "location": {
+          "startingColumn": 20,
+          "startingLine": 32
+        }
+      },
+      {
+        "comment": "",
+        "key": "Free",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 176
+        }
+      },
+      {
+        "comment": "",
+        "key": "Cancel RSVP",
+        "location": {
+          "startingColumn": 38,
+          "startingLine": 187
+        }
+      },
+      {
+        "comment": "",
+        "key": "RSVP Now",
+        "location": {
+          "startingColumn": 54,
+          "startingLine": 187
+        }
+      },
+      {
+        "comment": "",
+        "key": "Note: %@",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 343
+        }
+      },
+      {
+        "comment": "",
+        "key": "Following",
+        "location": {
+          "startingColumn": 44,
+          "startingLine": 233
+        }
+      },
+      {
+        "comment": "",
+        "key": "Follow",
+        "location": {
+          "startingColumn": 58,
+          "startingLine": 233
+        }
+      },
+      {
+        "comment": "",
+        "key": "Get directions",
+        "location": {
+          "startingColumn": 34,
+          "startingLine": 298
+        }
+      },
+      {
+        "comment": "",
+        "key": "Duration",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 315
+        }
+      },
+      {
+        "comment": "",
+        "key": "Format",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 329
+        }
+      },
+      {
+        "comment": "",
+        "key": "Organizer",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 382
+        }
+      },
+      {
+        "comment": "",
+        "key": "%lld followers",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 422
+        }
+      },
+      {
+        "comment": "",
+        "key": "•",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 423
+        }
+      },
+      {
+        "comment": "",
+        "key": "%lld events",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 424
+        }
+      },
+      {
+        "comment": "",
+        "key": "•",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 425
+        }
+      },
+      {
+        "comment": "",
+        "key": "%lld years active",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 426
+        }
+      },
+      {
+        "comment": "",
+        "key": "Contact",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 439
+        }
+      },
+      {
+        "comment": "",
+        "key": "Following",
+        "location": {
+          "startingColumn": 40,
+          "startingLine": 456
+        }
+      },
+      {
+        "comment": "",
+        "key": "Follow",
+        "location": {
+          "startingColumn": 54,
+          "startingLine": 456
+        }
+      }
+    ]
+  },
+  "version": 1
+}

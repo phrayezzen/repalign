@@ -115,4 +115,32 @@ export class UsersController {
   async remove(@Param('id', ParseUUIDPipe) id: string) {
     return this.usersService.remove(id);
   }
+
+  @Post(':id/follow')
+  @ApiOperation({ summary: 'Follow a user' })
+  @ApiResponse({ status: 201, description: 'User followed successfully' })
+  async followUser(@Param('id', ParseUUIDPipe) targetUserId: string, @CurrentUser() currentUser: any) {
+    return this.usersService.followUser(currentUser.id, targetUserId);
+  }
+
+  @Delete(':id/follow')
+  @ApiOperation({ summary: 'Unfollow a user' })
+  @ApiResponse({ status: 200, description: 'User unfollowed successfully' })
+  async unfollowUser(@Param('id', ParseUUIDPipe) targetUserId: string, @CurrentUser() currentUser: any) {
+    return this.usersService.unfollowUser(currentUser.id, targetUserId);
+  }
+
+  @Get(':id/followers')
+  @ApiOperation({ summary: 'Get user follower count' })
+  @ApiResponse({ status: 200, description: 'Follower count' })
+  async getFollowerCount(@Param('id', ParseUUIDPipe) userId: string) {
+    return this.usersService.getFollowerCount(userId);
+  }
+
+  @Get(':id/following/:targetId')
+  @ApiOperation({ summary: 'Check if user is following another user' })
+  @ApiResponse({ status: 200, description: 'Following status' })
+  async isFollowing(@Param('id', ParseUUIDPipe) userId: string, @Param('targetId', ParseUUIDPipe) targetUserId: string) {
+    return this.usersService.isFollowing(userId, targetUserId);
+  }
 }

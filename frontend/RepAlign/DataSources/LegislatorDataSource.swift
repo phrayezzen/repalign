@@ -3,6 +3,7 @@ import Foundation
 // MARK: - Data Source Protocol
 protocol LegislatorDataSourceProtocol {
     func fetchAllCurrentLegislators() async throws -> [LegislatorProfile]
+    func fetchLegislators(limit: Int, offset: Int) async throws -> [LegislatorProfile]
     func fetchLegislator(bioguideId: String) async throws -> LegislatorProfile?
     func fetchLegislatorsByState(state: String) async throws -> [LegislatorProfile]
     func fetchLegislatorsByParty(party: Party) async throws -> [LegislatorProfile]
@@ -17,6 +18,22 @@ class CongressAPIDataSource: LegislatorDataSourceProtocol {
     }
 
     func fetchAllCurrentLegislators() async throws -> [LegislatorProfile] {
+        return try await fetchLegislators(limit: 50, offset: 0)
+    }
+
+    func fetchLegislators(limit: Int, offset: Int) async throws -> [LegislatorProfile] {
+        // Congress API doesn't support pagination, so we fetch all and slice
+        let allLegislators = try await fetchAllLegislatorsFromAPI()
+        let endIndex = min(offset + limit, allLegislators.count)
+
+        if offset >= allLegislators.count {
+            return []
+        }
+
+        return Array(allLegislators[offset..<endIndex])
+    }
+
+    private func fetchAllLegislatorsFromAPI() async throws -> [LegislatorProfile] {
         // Fetch both House and Senate members
         async let houseMembers = apiService.fetchHouseMembers()
         async let senateMembers = apiService.fetchSenateMembers()
@@ -47,38 +64,83 @@ class CongressAPIDataSource: LegislatorDataSourceProtocol {
     }
 }
 
-// MARK: - Future Backend Data Source
+// MARK: - Backend Data Source
 class BackendAPIDataSource: LegislatorDataSourceProtocol {
-    private let baseURL = AppConfig.backendBaseURL
+    private let baseURL = AppConfig.shared.backendBaseURL
+    private let session: URLSession
+
+    init(session: URLSession = .shared) {
+        self.session = session
+    }
 
     func fetchAllCurrentLegislators() async throws -> [LegislatorProfile] {
-        // TODO: Implement when backend is ready
-        // This will call your custom backend API
-        // which will have processed Congress data + your custom ratings
-        throw DataSourceError.notImplemented
+        // For initial load, just fetch first page
+        return try await fetchLegislators(limit: 50, offset: 0)
+    }
+
+    func fetchLegislators(limit: Int = 50, offset: Int = 0) async throws -> [LegislatorProfile] {
+        print("DEBUG: BackendAPIDataSource.fetchLegislators() called with limit=\(limit), offset=\(offset)")
+        let url = URL(string: "\(baseURL)/legislators?limit=\(limit)&offset=\(offset)")!
+        print("DEBUG: Fetching from URL: \(url)")
+
+        let (data, response) = try await session.data(from: url)
+
+        guard let httpResponse = response as? HTTPURLResponse,
+              httpResponse.statusCode == 200 else {
+            print("DEBUG: Backend API error - status code: \((response as? HTTPURLResponse)?.statusCode ?? -1)")
+            throw DataSourceError.networkError(URLError(.badServerResponse))
+        }
+
+        print("DEBUG: Successfully received backend response, decoding...")
+        let backendResponse = try JSONDecoder().decode(BackendLegislatorsResponse.self, from: data)
+        print("DEBUG: Decoded \(backendResponse.legislators.count) legislators from backend")
+        let mappedLegislators = backendResponse.legislators.compactMap { BackendLegislatorMapper.mapToDomain($0) }
+        print("DEBUG: Mapped \(mappedLegislators.count) legislators to domain objects")
+        return mappedLegislators
     }
 
     func fetchLegislator(bioguideId: String) async throws -> LegislatorProfile? {
-        // TODO: Implement backend call
-        throw DataSourceError.notImplemented
+        // First try to find by bioguideId in the full list
+        let allLegislators = try await fetchAllCurrentLegislators()
+        return allLegislators.first { $0.bioguideId == bioguideId }
     }
 
     func fetchLegislatorsByState(state: String) async throws -> [LegislatorProfile] {
-        // TODO: Implement backend call
-        throw DataSourceError.notImplemented
+        let url = URL(string: "\(baseURL)/legislators/states/\(state)")!
+
+        let (data, response) = try await session.data(from: url)
+
+        guard let httpResponse = response as? HTTPURLResponse,
+              httpResponse.statusCode == 200 else {
+            throw DataSourceError.networkError(URLError(.badServerResponse))
+        }
+
+        let backendLegislators = try JSONDecoder().decode([BackendLegislator].self, from: data)
+        return backendLegislators.compactMap { BackendLegislatorMapper.mapToDomain($0) }
     }
 
     func fetchLegislatorsByParty(party: Party) async throws -> [LegislatorProfile] {
-        // TODO: Implement backend call
-        throw DataSourceError.notImplemented
+        let allLegislators = try await fetchAllCurrentLegislators()
+        return allLegislators.filter { $0.party == party }
     }
 }
 
 // MARK: - Mock Data Source (for testing)
 class MockDataSource: LegislatorDataSourceProtocol {
     func fetchAllCurrentLegislators() async throws -> [LegislatorProfile] {
-        // Return existing mock data
-        return MockDataProvider.createMockLegislatorProfiles()
+        return try await fetchLegislators(limit: 50, offset: 0)
+    }
+
+    func fetchLegislators(limit: Int, offset: Int) async throws -> [LegislatorProfile] {
+        // Return existing mock data with pagination
+        let allMock = MockDataProvider.createMockLegislatorProfiles()
+        let endIndex = min(offset + limit, allMock.count)
+
+        if offset >= allMock.count {
+            return []
+        }
+
+        return Array(allMock[offset..<endIndex])
     }
 
     func fetchLegislator(bioguideId: String) async throws -> LegislatorProfile? {
@@ -113,5 +175,149 @@ enum DataSourceError: Error, LocalizedError {
         case .invalidResponse:
             return "Invalid API response"
         }
+    }
+}
+
+// MARK: - Backend Response Models
+struct BackendLegislatorsResponse: Codable {
+    let legislators: [BackendLegislator]
+    let total: Int
+    let limit: Int
+    let offset: Int
+    let hasMore: Bool
+}
+
+struct BackendLegislator: Codable {
+    let id: String
+    let firstName: String
+    let lastName: String
+    let photoUrl: String?
+    let initials: String?
+    let chamber: String // "house" or "senate"
+    let state: String
+    let district: String?
+    let party: String // "DEMOCRAT", "REPUBLICAN", "INDEPENDENT"
+    let yearsInOffice: Int
+    let bioguideId: String
+    let userId: String?
+    let createdAt: String
+    let updatedAt: String
+}
+
+// MARK: - Backend Legislator Mapper
+struct BackendLegislatorMapper {
+    static func mapToDomain(_ backendLegislator: BackendLegislator) -> LegislatorProfile? {
+        // Create User first
+        let user = createUser(from: backendLegislator)
+
+        // Map party
+        guard let party = mapParty(backendLegislator.party) else {
+            print("Unknown party: \(backendLegislator.party)")
+            return nil
+        }
+
+        // Map position
+        let position: PoliticalPosition = backendLegislator.chamber == "senate" ? .senator : .representative
+
+        // Create district string
+        let district = createDistrictString(
+            state: backendLegislator.state,
+            district: backendLegislator.district,
+            position: position
+        )
+
+        // Create LegislatorProfile
+        let profile = LegislatorProfile(
+            userId: user.id,
+            bioguideId: backendLegislator.bioguideId,
+            position: position,
+            district: district,
+            party: party,
+            yearsInOffice: backendLegislator.yearsInOffice,
+            alignmentRating: generateRandomRating(), // TODO: Get from your backend
+            responsivenessRating: generateRandomRating(),
+            transparencyRating: generateRandomRating(),
+            officialWebsiteURL: generateOfficialWebsite(for: backendLegislator),
+            contactPhoneNumber: nil,
+            committees: [], // TODO: Add when backend provides this
+            leadership: [] // TODO: Add when backend provides this
+        )
+
+        // IMPORTANT: Set the user property so UI can display it
+        profile.user = user
+
+        return profile
+    }
+
+    private static func createUser(from backendLegislator: BackendLegislator) -> User {
+        let displayName = "\(backendLegislator.chamber == "senate" ? "Sen." : "Rep.") \(backendLegislator.firstName) \(backendLegislator.lastName)"
+        let location = "\(backendLegislator.state), USA"
+
+        return User(
+            id: backendLegislator.bioguideId,
+            username: backendLegislator.bioguideId.lowercased(),
+            displayName: displayName,
+            bio: generateBio(for: backendLegislator),
+            profileImageURL: backendLegislator.photoUrl,
+            location: location,
+            postsCount: 0,
+            followersCount: generateRandomFollowerCount(),
+            followingCount: 0,
+            userType: .legislator,
+            isVerified: true
+        )
+    }
+
+    private static func mapParty(_ partyString: String) -> Party? {
+        switch partyString.uppercased() {
+        case "DEMOCRAT", "DEMOCRATIC":
+            return .democrat
+        case "REPUBLICAN":
+            return .republican
+        case "INDEPENDENT":
+            return .independent
+        default:
+            return nil
+        }
+    }
+
+    private static func createDistrictString(
+        state: String,
+        district: String?,
+        position: PoliticalPosition
+    ) -> String? {
+        switch position {
+        case .senator:
+            return state
+        case .representative:
+            if let district = district, district != "0" {
+                return "\(state)-\(district)"
+            } else {
+                return "\(state) At-Large"
+            }
+        default:
+            return state
+        }
+    }
+
+    private static func generateBio(for legislator: BackendLegislator) -> String {
+        let title = legislator.chamber == "senate" ? "Senator" : "Representative"
+        let location = legislator.district != nil ? "District \(legislator.district!)" : legislator.state
+        return "\(title) representing \(location). Committed to serving the people and advancing important legislation."
+    }
+
+    private static func generateRandomRating() -> Double {
+        return Double.random(in: 60...95)
+    }
+
+    private static func generateRandomFollowerCount() -> Int {
+        return Int.random(in: 1000...50000)
+    }
+
+    private static func generateOfficialWebsite(for legislator: BackendLegislator) -> String? {
+        let lastName = legislator.lastName.lowercased()
+        return legislator.chamber == "senate" ?
+            "https://\(lastName).senate.gov" :
+            "https://\(lastName).house.gov"
     }
 }

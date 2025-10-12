@@ -1,9 +1,10 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User, UserType } from './entities/user.entity';
 import { CitizenProfile } from './entities/citizen-profile.entity';
 import { LegislatorProfile } from './entities/legislator-profile.entity';
+import { Follow } from '../posts/entities/follow.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 
@@ -16,6 +17,8 @@ export class UsersService {
     private citizenProfileRepository: Repository<CitizenProfile>,
     @InjectRepository(LegislatorProfile)
     private legislatorProfileRepository: Repository<LegislatorProfile>,
+    @InjectRepository(Follow)
+    private followRepository: Repository<Follow>,
   ) {}
 
   async create(createUserDto: CreateUserDto): Promise<User> {
@@ -216,5 +219,80 @@ export class UsersService {
       .leftJoinAndSelect('user.legislatorProfile', 'legislatorProfile')
       .where('legislatorProfile.bioguideId = :bioguideId', { bioguideId })
       .getOne();
+  }
+
+  // Follow functionality
+  async followUser(followerId: string, followingId: string) {
+    if (followerId === followingId) {
+      throw new BadRequestException('Cannot follow yourself');
+    }
+
+    const [follower, following] = await Promise.all([
+      this.findById(followerId),
+      this.findById(followingId),
+    ]);
+
+    if (!follower || !following) {
+      throw new NotFoundException('User not found');
+    }
+
+    const existingFollow = await this.followRepository.findOne({
+      where: { followerId, followingId },
+    });
+
+    if (existingFollow) {
+      return { message: 'Already following this user' };
+    }
+
+    const follow = this.followRepository.create({
+      followerId,
+      followingId,
+    });
+
+    await this.followRepository.save(follow);
+
+    // Update follower counts
+    await this.updateFollowerCounts(followingId);
+
+    return { message: 'User followed successfully' };
+  }
+
+  async unfollowUser(followerId: string, followingId: string) {
+    const follow = await this.followRepository.findOne({
+      where: { followerId, followingId },
+    });
+
+    if (follow) {
+      await this.followRepository.remove(follow);
+      await this.updateFollowerCounts(followingId);
+    }
+
+    return { message: 'User unfollowed successfully' };
+  }
+
+  async getFollowerCount(userId: string) {
+    const count = await this.followRepository.count({
+      where: { followingId: userId },
+    });
+
+    return { count };
+  }
+
+  async isFollowing(followerId: string, followingId: string) {
+    const follow = await this.followRepository.findOne({
+      where: { followerId, followingId },
+    });
+
+    return { isFollowing: !!follow };
+  }
+
+  private async updateFollowerCounts(userId: string) {
+    const followerCount = await this.followRepository.count({
+      where: { followingId: userId },
+    });
+
+    await this.usersRepository.update(userId, {
+      followersCount: followerCount,
+    });
   }
 }

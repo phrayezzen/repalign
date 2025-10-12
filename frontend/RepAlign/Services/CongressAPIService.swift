@@ -2,9 +2,9 @@ import Foundation
 
 // MARK: - Congress API Service
 class CongressAPIService {
-    private let baseURL = AppConfig.congressAPIBaseURL
-    private let apiKey = AppConfig.congressAPIKey
-    private let currentCongress = AppConfig.currentCongress
+    private let baseURL = AppConfig.shared.congressAPIBaseURL
+    private let apiKey = AppConfig.shared.congressAPIKey
+    private let currentCongress = AppConfig.shared.currentCongress
 
     private let session: URLSession
 
@@ -89,7 +89,7 @@ class CongressAPIService {
         request.setValue("application/json", forHTTPHeaderField: "Accept")
 
         // Add delay to respect rate limits
-        try await Task.sleep(nanoseconds: UInt64(AppConfig.apiRequestDelay * 1_000_000_000))
+        try await Task.sleep(nanoseconds: UInt64(AppConfig.shared.apiRequestDelay * 1_000_000_000))
 
         let (data, response) = try await session.data(for: request)
 

@@ -1,0 +1,88 @@
+{
+  "source": "/Users/xilinliu/Projects/RepAlign/frontend/RepAlign/Views/FeedCard.swift",
+  "tables": {
+    "Localizable": [
+      {
+        "comment": "",
+        "key": "RSVP",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 137
+        }
+      },
+      {
+        "comment": "",
+        "key": "View Discussion",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 147
+        }
+      },
+      {
+        "comment": "",
+        "key": "Events",
+        "location": {
+          "startingColumn": 44,
+          "startingLine": 41
+        }
+      },
+      {
+        "comment": "",
+        "key": "Petitions",
+        "location": {
+          "startingColumn": 81,
+          "startingLine": 41
+        }
+      },
+      {
+        "comment": "",
+        "key": "Posts",
+        "location": {
+          "startingColumn": 95,
+          "startingLine": 41
+        }
+      },
+      {
+        "comment": "",
+        "key": "%lld",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 125
+        }
+      },
+      {
+        "comment": "",
+        "key": "%lld of %lld signatures",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 216
+        }
+      },
+      {
+        "comment": "",
+        "key": "%lld%%",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 220
+        }
+      },
+      {
+        "comment": "",
+        "key": "Deadline: %@",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 233
+        }
+      },
+      {
+        "comment": "",
+        "key": "#%@",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 258
+        }
+      }
+    ]
+  },
+  "version": 1
+}

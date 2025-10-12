@@ -19,6 +19,7 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
       return true;
     }
 
+    // Use actual JWT authentication
     return super.canActivate(context);
   }
 }

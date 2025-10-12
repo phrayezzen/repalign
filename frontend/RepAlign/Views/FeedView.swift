@@ -1,158 +1,245 @@
 import SwiftUI
-import SwiftData
 
 struct FeedView: View {
-    @Query(sort: \Post.timestamp, order: .reverse) private var posts: [Post]
-    @Query private var users: [User]
+    @StateObject private var repository = FeedRepository()
+    @State private var feedItems: [FeedItem] = []
+    @State private var searchText = ""
+    @State private var selectedFilter: FeedItemType? = nil
+    @State private var isLoading = false
+    @State private var isLoadingMore = false
+    @State private var errorMessage: String?
+    @State private var showError = false
+
+    private let filterOptions: [(String, FeedItemType?)] = [
+        ("General", nil),
+        ("Updates", .post),
+        ("Discussions", .post),
+        ("Events", .event),
+        ("Petitions", .petition)
+    ]
+
+    var filteredItems: [FeedItem] {
+        var items = feedItems
+
+        // Apply type filter
+        if let selectedFilter = selectedFilter {
+            items = items.filter { $0.type == selectedFilter }
+        }
+
+        // Apply search filter
+        if !searchText.isEmpty {
+            items = items.filter { item in
+                item.content.localizedCaseInsensitiveContains(searchText) ||
+                (item.title?.localizedCaseInsensitiveContains(searchText) ?? false) ||
+                item.authorName.localizedCaseInsensitiveContains(searchText)
+            }
+        }
+
+        return items
+    }
 
     var body: some View {
         NavigationView {
-            ScrollView {
-                LazyVStack(spacing: 16) {
-                    ForEach(posts) { post in
-                        if let author = users.first(where: { $0.id == post.authorId }) {
-                            PostCardView(post: post, author: author)
+            VStack(spacing: 0) {
+                // Search Bar
+                SearchBar(text: $searchText)
+                    .padding(.horizontal)
+                    .padding(.top, 8)
+
+                // Filter Tabs
+                FilterTabsView(
+                    options: filterOptions,
+                    selectedFilter: $selectedFilter
+                )
+                .padding(.horizontal)
+
+                // Feed Content
+                if isLoading && feedItems.isEmpty {
+                    LoadingView()
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                } else {
+                    ScrollView {
+                        LazyVStack(spacing: 12) {
+                            ForEach(filteredItems) { item in
+                                FeedCard(item: item)
+                                    .onAppear {
+                                        loadMoreIfNeeded(item: item)
+                                    }
+                            }
+
+                            if isLoadingMore {
+                                ProgressView()
+                                    .padding()
+                            }
                         }
+                        .padding(.horizontal)
+                        .padding(.top, 8)
+                    }
+                    .refreshable {
+                        await refreshFeed()
                     }
                 }
-                .padding(.horizontal)
-                .padding(.top)
             }
-            .navigationTitle("RepAlign")
-            .background(Color(.systemGroupedBackground))
+            .navigationTitle("Feed")
+            .navigationBarTitleDisplayMode(.large)
+            .task {
+                await loadInitialFeed()
+            }
+            .alert("Error", isPresented: $showError) {
+                Button("OK") { }
+            } message: {
+                Text(errorMessage ?? "An unexpected error occurred")
+            }
+        }
+    }
+
+    private func loadInitialFeed() async {
+        guard !isLoading else { return }
+
+        isLoading = true
+        errorMessage = nil
+
+        do {
+            let items = try await repository.loadInitialFeed()
+            await MainActor.run {
+                self.feedItems = items
+                self.isLoading = false
+            }
+        } catch {
+            await MainActor.run {
+                self.errorMessage = error.localizedDescription
+                self.showError = true
+                self.isLoading = false
+            }
+        }
+    }
+
+    private func refreshFeed() async {
+        do {
+            let items = try await repository.refreshFeed()
+            await MainActor.run {
+                self.feedItems = items
+            }
+        } catch {
+            await MainActor.run {
+                self.errorMessage = error.localizedDescription
+                self.showError = true
+            }
+        }
+    }
+
+    private func loadMoreIfNeeded(item: FeedItem) {
+        let thresholdIndex = filteredItems.index(filteredItems.endIndex, offsetBy: -5)
+        if let itemIndex = filteredItems.firstIndex(where: { $0.id == item.id }),
+           itemIndex >= thresholdIndex,
+           !isLoadingMore,
+           repository.canLoadMore {
+
+            Task {
+                await loadMoreFeed()
+            }
+        }
+    }
+
+    private func loadMoreFeed() async {
+        guard !isLoadingMore else { return }
+
+        isLoadingMore = true
+
+        do {
+            let items = try await repository.loadMoreFeed()
+            await MainActor.run {
+                self.feedItems = items
+                self.isLoadingMore = false
+            }
+        } catch {
+            await MainActor.run {
+                self.errorMessage = error.localizedDescription
+                self.showError = true
+                self.isLoadingMore = false
+            }
         }
     }
 }
 
-struct PostCardView: View {
-    let post: Post
-    let author: User
-    @State private var isLiked = false
+struct SearchBar: View {
+    @Binding var text: String
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            header
+        HStack {
+            Image(systemName: "magnifyingglass")
+                .foregroundColor(.secondary)
 
-            Text(post.content)
-                .font(.body)
-                .lineLimit(nil)
+            TextField("Search feed...", text: $text)
+                .textFieldStyle(PlainTextFieldStyle())
 
-            if !post.tags.isEmpty {
-                ScrollView(.horizontal, showsIndicators: false) {
-                    HStack(spacing: 8) {
-                        ForEach(post.tags, id: \.self) { tag in
-                            Text("#\(tag)")
-                                .font(.caption)
-                                .foregroundColor(.blue)
-                                .padding(.horizontal, 8)
-                                .padding(.vertical, 4)
-                                .background(Color.blue.opacity(0.1))
-                                .cornerRadius(8)
+            if !text.isEmpty {
+                Button(action: { text = "" }) {
+                    Image(systemName: "xmark.circle.fill")
+                        .foregroundColor(.secondary)
+                }
+            }
+        }
+        .padding(.horizontal, 12)
+        .padding(.vertical, 8)
+        .background(Color(.systemGray6))
+        .cornerRadius(10)
+    }
+}
+
+struct FilterTabsView: View {
+    let options: [(String, FeedItemType?)]
+    @Binding var selectedFilter: FeedItemType?
+
+    var body: some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: 8) {
+                ForEach(options, id: \.0) { option in
+                    FilterTab(
+                        title: option.0,
+                        isSelected: selectedFilter == option.1,
+                        action: {
+                            selectedFilter = selectedFilter == option.1 ? nil : option.1
                         }
-                    }
-                    .padding(.horizontal)
+                    )
                 }
             }
-
-            engagementBar
+            .padding(.horizontal)
         }
-        .padding(16)
-        .background(Color(.systemBackground))
-        .cornerRadius(12)
-        .shadow(color: .black.opacity(0.1), radius: 2, x: 0, y: 1)
+        .padding(.vertical, 8)
     }
+}
 
-    private var header: some View {
-        HStack(spacing: 12) {
-            ProfileAvatarView(user: author, size: 40)
+struct FilterTab: View {
+    let title: String
+    let isSelected: Bool
+    let action: () -> Void
 
-            VStack(alignment: .leading, spacing: 2) {
-                HStack(spacing: 6) {
-                    Text(author.displayName)
-                        .font(.headline)
-                        .fontWeight(.medium)
-
-                    if author.isVerified {
-                        Image(systemName: "checkmark.seal.fill")
-                            .foregroundColor(.blue)
-                            .font(.caption)
-                    }
-                }
-
-                Text(timeAgo(from: post.timestamp))
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-            }
-
-            Spacer()
-
-            Button(action: {}) {
-                Image(systemName: "ellipsis")
-                    .foregroundColor(.secondary)
-            }
+    var body: some View {
+        Button(action: action) {
+            Text(title)
+                .font(.subheadline)
+                .fontWeight(.medium)
+                .padding(.horizontal, 16)
+                .padding(.vertical, 8)
+                .background(isSelected ? Color.accentColor : Color(.systemGray6))
+                .foregroundColor(isSelected ? .white : .primary)
+                .cornerRadius(20)
         }
     }
+}
 
-    private var engagementBar: some View {
-        HStack(spacing: 20) {
-            Button(action: { isLiked.toggle() }) {
-                HStack(spacing: 4) {
-                    Image(systemName: isLiked ? "heart.fill" : "heart")
-                        .foregroundColor(isLiked ? .red : .secondary)
-
-                    Text("\(post.likeCount)")
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                }
-            }
-
-            Button(action: {}) {
-                HStack(spacing: 4) {
-                    Image(systemName: "message")
-                        .foregroundColor(.secondary)
-
-                    Text("\(post.commentCount)")
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                }
-            }
-
-            Button(action: {}) {
-                HStack(spacing: 4) {
-                    Image(systemName: "arrowshape.turn.up.right")
-                        .foregroundColor(.secondary)
-
-                    Text("\(post.shareCount)")
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                }
-            }
-
-            Spacer()
+struct LoadingView: View {
+    var body: some View {
+        VStack(spacing: 16) {
+            ProgressView()
+                .scaleEffect(1.2)
+            Text("Loading feed...")
+                .foregroundColor(.secondary)
         }
-    }
-
-    private func timeAgo(from date: Date) -> String {
-        let formatter = RelativeDateTimeFormatter()
-        formatter.unitsStyle = .abbreviated
-        return formatter.localizedString(for: date, relativeTo: Date())
     }
 }
 
 #Preview {
-    let config = ModelConfiguration(isStoredInMemoryOnly: true)
-    let container = try! ModelContainer(for: User.self, Post.self, configurations: config)
-
-    let users = MockDataProvider.createMockUsers()
-    let posts = MockDataProvider.createMockPosts()
-
-    for user in users {
-        container.mainContext.insert(user)
-    }
-    for post in posts {
-        container.mainContext.insert(post)
-    }
-
-    return FeedView()
-        .modelContainer(container)
+    FeedView()
 }

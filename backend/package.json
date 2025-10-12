@@ -18,7 +18,11 @@
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "migration:generate": "typeorm migration:generate -d src/config/database.config.ts",
     "migration:run": "typeorm migration:run -d src/config/database.config.ts",
-    "migration:revert": "typeorm migration:revert -d src/config/database.config.ts"
+    "migration:revert": "typeorm migration:revert -d src/config/database.config.ts",
+    "cli": "ts-node -r tsconfig-paths/register src/cli.ts",
+    "seed:legislators": "npm run cli seed:legislators",
+    "seed:social": "npm run cli seed:social",
+    "seed:simple": "npm run cli seed:simple"
   },
   "dependencies": {
     "@nestjs/common": "^10.0.0",
