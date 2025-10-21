@@ -2,6 +2,7 @@ import { Command, CommandRunner } from 'nest-commander';
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import * as bcrypt from 'bcryptjs';
 import { User, UserType } from '../../users/entities/user.entity';
 import { CitizenProfile } from '../../users/entities/citizen-profile.entity';
 import { Post, PostType } from '../../posts/entities/post.entity';
@@ -53,13 +54,16 @@ export class SimpleSeedCommand extends CommandRunner {
   private async createTestUser(): Promise<User> {
     this.logger.log('Creating test user...');
 
+    // Hash the password before saving
+    const hashedPassword = await bcrypt.hash('test_password', 12);
+
     const userData = {
       email: 'test_user@example.com',
       username: 'test_user',
       displayName: 'Test User',
       userType: UserType.CITIZEN,
       isVerified: true,
-      password: 'test_password',
+      password: hashedPassword,
       location: 'Test City, TS',
     };
 
