@@ -38,12 +38,11 @@ class AppConfig {
 
     var backendEnvironment: BackendEnvironment {
         get {
-            return .ngrok
             if let savedValue = UserDefaults.standard.string(forKey: backendEnvironmentKey),
                let environment = BackendEnvironment(rawValue: savedValue) {
                 return environment
             }
-            return .railway // Default to Railway
+            return .ngrok // Default to ngrok for now
         }
         set {
             UserDefaults.standard.set(newValue.rawValue, forKey: backendEnvironmentKey)

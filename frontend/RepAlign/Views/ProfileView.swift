@@ -8,6 +8,7 @@ struct ProfileView: View {
     var selectedTab: Binding<Int>?
     @State private var isFollowing = false
     @State private var showingTakeAction = false
+    @State private var selectedBackend = AppConfig.shared.backendEnvironment
     @EnvironmentObject private var authService: AuthService
 
     @Query private var bills: [Bill]
@@ -29,6 +30,11 @@ struct ProfileView: View {
                 profileHeader
                 statsSection
                 actionButtons
+
+                // Backend Toggle (temporary dev tool) - only show for current user
+                if isCurrentUser {
+                    backendToggleSection
+                }
 
                 if let citizenProfile = citizenProfile {
                     citizenEngagementCard(citizenProfile)
@@ -553,6 +559,41 @@ struct ProfileFeedSection: View {
                 self.isLoading = false
             }
         }
+    }
+
+    private var backendToggleSection: some View {
+        VStack(spacing: 8) {
+            HStack {
+                Image(systemName: "server.rack")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+                Text("Backend: \(selectedBackend.rawValue)")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+                Spacer()
+            }
+
+            Button(action: toggleBackend) {
+                HStack {
+                    Image(systemName: "arrow.triangle.2.circlepath")
+                    Text("Switch to \(nextBackend.rawValue)")
+                }
+                .font(.caption)
+                .foregroundColor(.blue)
+            }
+        }
+        .padding()
+        .background(Color(.systemGray6))
+        .cornerRadius(10)
+    }
+
+    private var nextBackend: BackendEnvironment {
+        selectedBackend == .ngrok ? .railway : .ngrok
+    }
+
+    private func toggleBackend() {
+        selectedBackend = nextBackend
+        AppConfig.shared.backendEnvironment = selectedBackend
     }
 }
 

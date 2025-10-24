@@ -2,11 +2,9 @@ import Foundation
 
 class PetitionService {
     static let shared = PetitionService()
-    private let baseURL: String
+    private let apiClient = APIClient.shared
 
-    private init() {
-        self.baseURL = AppConfig.shared.backendBaseURL
-    }
+    private init() {}
 
     // MARK: - Petition Models
 
@@ -68,8 +66,6 @@ class PetitionService {
         mine: Bool = false,
         sortBy: String = "createdAt"
     ) async throws -> PetitionListResponse {
-        var components = URLComponents(string: "\(baseURL)/congress/petitions")!
-
         var queryItems: [URLQueryItem] = [
             URLQueryItem(name: "page", value: "\(page)"),
             URLQueryItem(name: "limit", value: "\(limit)"),
@@ -92,156 +88,29 @@ class PetitionService {
             queryItems.append(URLQueryItem(name: "mine", value: "true"))
         }
 
+        var components = URLComponents()
         components.queryItems = queryItems
+        let queryString = components.percentEncodedQuery ?? ""
+        let path = "/congress/petitions" + (queryString.isEmpty ? "" : "?\(queryString)")
 
-        guard let url = components.url else {
-            throw PetitionError.invalidURL
-        }
-
-        var request = URLRequest(url: url)
-        request.httpMethod = "GET"
-
-        // Add auth token if available
-        if let token = AuthService.shared.authToken {
-            request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
-        }
-
-        let (data, response) = try await URLSession.shared.data(for: request)
-
-        guard let httpResponse = response as? HTTPURLResponse else {
-            throw PetitionError.networkError
-        }
-
-        guard httpResponse.statusCode == 200 else {
-            throw PetitionError.requestFailed(statusCode: httpResponse.statusCode)
-        }
-
-        let decoder = JSONDecoder()
-        decoder.dateDecodingStrategy = .iso8601
-
-        return try decoder.decode(PetitionListResponse.self, from: data)
+        return try await apiClient.get(path: path, requiresAuth: false)
     }
 
     func getPetition(id: String) async throws -> Petition {
-        guard let url = URL(string: "\(baseURL)/congress/petitions/\(id)") else {
-            throw PetitionError.invalidURL
-        }
-
-        var request = URLRequest(url: url)
-        request.httpMethod = "GET"
-
-        // Add auth token if available
-        if let token = AuthService.shared.authToken {
-            request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
-        }
-
-        let (data, response) = try await URLSession.shared.data(for: request)
-
-        guard let httpResponse = response as? HTTPURLResponse else {
-            throw PetitionError.networkError
-        }
-
-        guard httpResponse.statusCode == 200 else {
-            throw PetitionError.requestFailed(statusCode: httpResponse.statusCode)
-        }
-
-        let decoder = JSONDecoder()
-        decoder.dateDecodingStrategy = .iso8601
-
-        return try decoder.decode(Petition.self, from: data)
+        return try await apiClient.get(path: "/congress/petitions/\(id)", requiresAuth: false)
     }
 
     func createPetition(petition: CreatePetitionRequest) async throws -> Petition {
-        guard let url = URL(string: "\(baseURL)/congress/petitions") else {
-            throw PetitionError.invalidURL
-        }
-
-        guard let token = AuthService.shared.authToken else {
-            throw PetitionError.unauthorized
-        }
-
-        var request = URLRequest(url: url)
-        request.httpMethod = "POST"
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
-
-        let encoder = JSONEncoder()
-        encoder.dateEncodingStrategy = .iso8601
-        request.httpBody = try encoder.encode(petition)
-
-        let (data, response) = try await URLSession.shared.data(for: request)
-
-        guard let httpResponse = response as? HTTPURLResponse else {
-            throw PetitionError.networkError
-        }
-
-        guard httpResponse.statusCode == 201 else {
-            throw PetitionError.requestFailed(statusCode: httpResponse.statusCode)
-        }
-
-        let decoder = JSONDecoder()
-        decoder.dateDecodingStrategy = .iso8601
-
-        return try decoder.decode(Petition.self, from: data)
+        return try await apiClient.post(path: "/congress/petitions", body: petition, requiresAuth: true)
     }
 
     func signPetition(id: String, comment: String? = nil, isPublic: Bool = true) async throws -> SignatureResponse {
-        guard let url = URL(string: "\(baseURL)/congress/petitions/\(id)/sign") else {
-            throw PetitionError.invalidURL
-        }
-
-        guard let token = AuthService.shared.authToken else {
-            throw PetitionError.unauthorized
-        }
-
-        var request = URLRequest(url: url)
-        request.httpMethod = "POST"
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
-
         let body = SignPetitionRequest(comment: comment, isPublic: isPublic)
-        request.httpBody = try JSONEncoder().encode(body)
-
-        let (data, response) = try await URLSession.shared.data(for: request)
-
-        guard let httpResponse = response as? HTTPURLResponse else {
-            throw PetitionError.networkError
-        }
-
-        guard httpResponse.statusCode == 201 else {
-            if httpResponse.statusCode == 409 {
-                throw PetitionError.alreadySigned
-            }
-            throw PetitionError.requestFailed(statusCode: httpResponse.statusCode)
-        }
-
-        return try JSONDecoder().decode(SignatureResponse.self, from: data)
+        return try await apiClient.post(path: "/congress/petitions/\(id)/sign", body: body, requiresAuth: true)
     }
 
     func unsignPetition(id: String) async throws -> SignatureResponse {
-        guard let url = URL(string: "\(baseURL)/congress/petitions/\(id)/sign") else {
-            throw PetitionError.invalidURL
-        }
-
-        guard let token = AuthService.shared.authToken else {
-            throw PetitionError.unauthorized
-        }
-
-        var request = URLRequest(url: url)
-        request.httpMethod = "DELETE"
-        request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
-
-        let (data, response) = try await URLSession.shared.data(for: request)
-
-        guard let httpResponse = response as? HTTPURLResponse else {
-            throw PetitionError.networkError
-        }
-
-        guard httpResponse.statusCode == 200 else {
-            throw PetitionError.requestFailed(statusCode: httpResponse.statusCode)
-        }
-
-        return try JSONDecoder().decode(SignatureResponse.self, from: data)
+        return try await apiClient.delete(path: "/congress/petitions/\(id)/sign", requiresAuth: true)
     }
 }
 

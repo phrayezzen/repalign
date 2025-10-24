@@ -7,6 +7,7 @@ struct LoginView: View {
     @State private var showingAlert = false
     @State private var alertMessage = ""
     @State private var showingRegister = false
+    @State private var selectedBackend = AppConfig.shared.backendEnvironment
 
     var body: some View {
         NavigationView {
@@ -85,6 +86,20 @@ struct LoginView: View {
                 }
 
                 Spacer()
+
+                // Backend Toggle (temporary dev tool)
+                VStack(spacing: 8) {
+                    Text("Backend: \(selectedBackend.rawValue)")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+
+                    Button(action: toggleBackend) {
+                        Text("Switch to \(nextBackend.rawValue)")
+                            .font(.caption)
+                            .foregroundColor(.blue)
+                    }
+                }
+                .padding(.bottom, 8)
             }
             .padding(.horizontal, 24)
             .navigationTitle("")
@@ -119,6 +134,15 @@ struct LoginView: View {
                 }
             }
         }
+    }
+
+    private var nextBackend: BackendEnvironment {
+        selectedBackend == .ngrok ? .railway : .ngrok
+    }
+
+    private func toggleBackend() {
+        selectedBackend = nextBackend
+        AppConfig.shared.backendEnvironment = selectedBackend
     }
 }
 

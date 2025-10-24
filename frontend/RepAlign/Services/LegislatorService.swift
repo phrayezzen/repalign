@@ -2,11 +2,9 @@ import Foundation
 
 class LegislatorService {
     static let shared = LegislatorService()
-    private let baseURL: String
+    private let apiClient = APIClient.shared
 
-    private init() {
-        self.baseURL = AppConfig.shared.backendBaseURL
-    }
+    private init() {}
 
     // MARK: - Models
 
@@ -208,8 +206,6 @@ class LegislatorService {
         limit: Int = 50,
         offset: Int = 0
     ) async throws -> LegislatorsResponse {
-        var components = URLComponents(string: "\(baseURL)/legislators")!
-
         var queryItems: [URLQueryItem] = [
             URLQueryItem(name: "limit", value: "\(limit)"),
             URLQueryItem(name: "offset", value: "\(offset)")
@@ -231,126 +227,27 @@ class LegislatorService {
             queryItems.append(URLQueryItem(name: "search", value: search))
         }
 
+        var components = URLComponents()
         components.queryItems = queryItems
+        let queryString = components.percentEncodedQuery ?? ""
+        let path = "/legislators" + (queryString.isEmpty ? "" : "?\(queryString)")
 
-        guard let url = components.url else {
-            throw LegislatorError.invalidURL
-        }
-
-        var request = URLRequest(url: url)
-        request.httpMethod = "GET"
-        request.setValue("1", forHTTPHeaderField: "ngrok-skip-browser-warning")
-
-        // Add auth token if available (for isFollowing flag)
-        if let token = AuthService.shared.authToken {
-            request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
-        }
-
-        let (data, response) = try await URLSession.shared.data(for: request)
-
-        guard let httpResponse = response as? HTTPURLResponse else {
-            throw LegislatorError.networkError
-        }
-
-        guard httpResponse.statusCode == 200 else {
-            throw LegislatorError.requestFailed(statusCode: httpResponse.statusCode)
-        }
-
-        let decoder = JSONDecoder()
-        decoder.dateDecodingStrategy = .iso8601
-
-        return try decoder.decode(LegislatorsResponse.self, from: data)
+        return try await apiClient.get(path: path, requiresAuth: false)
     }
 
     func getLegislator(id: String) async throws -> LegislatorDetail {
-        guard let url = URL(string: "\(baseURL)/legislators/\(id)") else {
-            throw LegislatorError.invalidURL
-        }
-
-        var request = URLRequest(url: url)
-        request.httpMethod = "GET"
-        request.setValue("1", forHTTPHeaderField: "ngrok-skip-browser-warning")
-
-        if let token = AuthService.shared.authToken {
-            request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
-        }
-
-        let (data, response) = try await URLSession.shared.data(for: request)
-
-        guard let httpResponse = response as? HTTPURLResponse else {
-            throw LegislatorError.networkError
-        }
-
-        guard httpResponse.statusCode == 200 else {
-            throw LegislatorError.requestFailed(statusCode: httpResponse.statusCode)
-        }
-
-        let decoder = JSONDecoder()
-        decoder.dateDecodingStrategy = .iso8601
-
-        return try decoder.decode(LegislatorDetail.self, from: data)
+        return try await apiClient.get(path: "/legislators/\(id)", requiresAuth: false)
     }
 
     func followLegislator(id: String) async throws -> FollowResponse {
-        guard let url = URL(string: "\(baseURL)/legislators/\(id)/follow") else {
-            throw LegislatorError.invalidURL
-        }
-
-        guard let token = AuthService.shared.authToken else {
-            throw LegislatorError.unauthorized
-        }
-
-        var request = URLRequest(url: url)
-        request.httpMethod = "POST"
-        request.setValue("1", forHTTPHeaderField: "ngrok-skip-browser-warning")
-        request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
-
-        let (data, response) = try await URLSession.shared.data(for: request)
-
-        guard let httpResponse = response as? HTTPURLResponse else {
-            throw LegislatorError.networkError
-        }
-
-        guard httpResponse.statusCode == 201 else {
-            if httpResponse.statusCode == 409 {
-                throw LegislatorError.alreadyFollowing
-            }
-            throw LegislatorError.requestFailed(statusCode: httpResponse.statusCode)
-        }
-
-        return try JSONDecoder().decode(FollowResponse.self, from: data)
+        return try await apiClient.post(path: "/legislators/\(id)/follow", body: nil as String?, requiresAuth: true)
     }
 
     func unfollowLegislator(id: String) async throws -> FollowResponse {
-        guard let url = URL(string: "\(baseURL)/legislators/\(id)/follow") else {
-            throw LegislatorError.invalidURL
-        }
-
-        guard let token = AuthService.shared.authToken else {
-            throw LegislatorError.unauthorized
-        }
-
-        var request = URLRequest(url: url)
-        request.httpMethod = "DELETE"
-        request.setValue("1", forHTTPHeaderField: "ngrok-skip-browser-warning")
-        request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
-
-        let (data, response) = try await URLSession.shared.data(for: request)
-
-        guard let httpResponse = response as? HTTPURLResponse else {
-            throw LegislatorError.networkError
-        }
-
-        guard httpResponse.statusCode == 200 else {
-            throw LegislatorError.requestFailed(statusCode: httpResponse.statusCode)
-        }
-
-        return try JSONDecoder().decode(FollowResponse.self, from: data)
+        return try await apiClient.delete(path: "/legislators/\(id)/follow", requiresAuth: true)
     }
 
     func getDonors(id: String, limit: Int = 50, offset: Int = 0, type: String? = nil) async throws -> DonorsResponse {
-        var components = URLComponents(string: "\(baseURL)/legislators/\(id)/donors")!
-
         var queryItems: [URLQueryItem] = [
             URLQueryItem(name: "limit", value: "\(limit)"),
             URLQueryItem(name: "offset", value: "\(offset)")
@@ -360,94 +257,36 @@ class LegislatorService {
             queryItems.append(URLQueryItem(name: "type", value: type))
         }
 
+        var components = URLComponents()
         components.queryItems = queryItems
+        let queryString = components.percentEncodedQuery ?? ""
+        let path = "/legislators/\(id)/donors" + (queryString.isEmpty ? "" : "?\(queryString)")
 
-        guard let url = components.url else {
-            throw LegislatorError.invalidURL
-        }
-
-        var request = URLRequest(url: url)
-        request.httpMethod = "GET"
-        request.setValue("1", forHTTPHeaderField: "ngrok-skip-browser-warning")
-
-        let (data, response) = try await URLSession.shared.data(for: request)
-
-        guard let httpResponse = response as? HTTPURLResponse else {
-            throw LegislatorError.networkError
-        }
-
-        guard httpResponse.statusCode == 200 else {
-            throw LegislatorError.requestFailed(statusCode: httpResponse.statusCode)
-        }
-
-        let decoder = JSONDecoder()
-        decoder.dateDecodingStrategy = .iso8601
-
-        return try decoder.decode(DonorsResponse.self, from: data)
+        return try await apiClient.get(path: path, requiresAuth: false)
     }
 
     func getVotes(id: String, limit: Int = 50, offset: Int = 0) async throws -> VotesResponse {
-        var components = URLComponents(string: "\(baseURL)/legislators/\(id)/votes")!
-
+        var components = URLComponents()
         components.queryItems = [
             URLQueryItem(name: "limit", value: "\(limit)"),
             URLQueryItem(name: "offset", value: "\(offset)")
         ]
+        let queryString = components.percentEncodedQuery ?? ""
+        let path = "/legislators/\(id)/votes" + (queryString.isEmpty ? "" : "?\(queryString)")
 
-        guard let url = components.url else {
-            throw LegislatorError.invalidURL
-        }
-
-        var request = URLRequest(url: url)
-        request.httpMethod = "GET"
-        request.setValue("1", forHTTPHeaderField: "ngrok-skip-browser-warning")
-
-        let (data, response) = try await URLSession.shared.data(for: request)
-
-        guard let httpResponse = response as? HTTPURLResponse else {
-            throw LegislatorError.networkError
-        }
-
-        guard httpResponse.statusCode == 200 else {
-            throw LegislatorError.requestFailed(statusCode: httpResponse.statusCode)
-        }
-
-        let decoder = JSONDecoder()
-        decoder.dateDecodingStrategy = .iso8601
-
-        return try decoder.decode(VotesResponse.self, from: data)
+        return try await apiClient.get(path: path, requiresAuth: false)
     }
 
     func getPressReleases(id: String, limit: Int = 50, offset: Int = 0) async throws -> PressResponse {
-        var components = URLComponents(string: "\(baseURL)/legislators/\(id)/press")!
-
+        var components = URLComponents()
         components.queryItems = [
             URLQueryItem(name: "limit", value: "\(limit)"),
             URLQueryItem(name: "offset", value: "\(offset)")
         ]
+        let queryString = components.percentEncodedQuery ?? ""
+        let path = "/legislators/\(id)/press" + (queryString.isEmpty ? "" : "?\(queryString)")
 
-        guard let url = components.url else {
-            throw LegislatorError.invalidURL
-        }
-
-        var request = URLRequest(url: url)
-        request.httpMethod = "GET"
-        request.setValue("1", forHTTPHeaderField: "ngrok-skip-browser-warning")
-
-        let (data, response) = try await URLSession.shared.data(for: request)
-
-        guard let httpResponse = response as? HTTPURLResponse else {
-            throw LegislatorError.networkError
-        }
-
-        guard httpResponse.statusCode == 200 else {
-            throw LegislatorError.requestFailed(statusCode: httpResponse.statusCode)
-        }
-
-        let decoder = JSONDecoder()
-        decoder.dateDecodingStrategy = .iso8601
-
-        return try decoder.decode(PressResponse.self, from: data)
+        return try await apiClient.get(path: path, requiresAuth: false)
     }
 }
 
