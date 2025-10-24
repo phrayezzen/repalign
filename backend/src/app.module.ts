@@ -11,6 +11,7 @@ import { PostsModule } from './posts/posts.module';
 import { CongressModule } from './congress/congress.module';
 import { GamificationModule } from './gamification/gamification.module';
 import { FeedModule } from './feed/feed.module';
+import { HealthModule } from './health/health.module';
 
 // Import all entities explicitly
 import { User } from './users/entities/user.entity';
@@ -113,6 +114,7 @@ import { Activity } from './gamification/entities/activity.entity';
     }),
 
     // Feature modules
+    HealthModule,
     AuthModule,
     UsersModule,
     PostsModule,
