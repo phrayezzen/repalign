@@ -7,7 +7,7 @@ export interface CongressMember {
   bioguideId: string;
   firstName: string;
   lastName: string;
-  party: string;
+  party: Party;
   state: string;
   district?: string;
   chamber: 'house' | 'senate';
@@ -196,5 +196,64 @@ export class CongressApiService {
     const now = new Date();
     const years = now.getFullYear() - start.getFullYear();
     return years > 0 ? years : 0;
+  }
+
+  /**
+   * Fetch bills from a specific Congress
+   */
+  async getBills(congress: number, limit = 250, offset = 0): Promise<any> {
+    try {
+      const response = await this.httpClient.get(`/bill/${congress}`, {
+        params: {
+          limit,
+          offset,
+          format: 'json',
+        },
+      });
+      return response.data;
+    } catch (error) {
+      this.logger.error(`Failed to fetch bills for Congress ${congress}`, error.stack);
+      throw error;
+    }
+  }
+
+  /**
+   * Fetch all bills from a specific Congress with pagination
+   */
+  async getAllBills(congress: number): Promise<any[]> {
+    const allBills: any[] = [];
+    let offset = 0;
+    const limit = 250;
+    let hasMore = true;
+
+    while (hasMore) {
+      this.logger.log(`Fetching bills from Congress ${congress} with offset ${offset}...`);
+
+      const response = await this.getBills(congress, limit, offset);
+
+      const bills = response.bills || [];
+      allBills.push(...bills);
+
+      // Check if there are more pages
+      const pagination = response.pagination;
+      hasMore = !!pagination?.next;
+      offset += limit;
+
+      this.logger.log(`Fetched ${bills.length} bills, total so far: ${allBills.length}`);
+
+      // Small delay to be respectful to the API
+      if (hasMore) {
+        await new Promise(resolve => setTimeout(resolve, 500));
+      }
+
+      // Safety check: don't fetch more than 2000 bills in one go
+      if (allBills.length >= 2000) {
+        this.logger.warn(`Reached 2000 bills limit, stopping pagination`);
+        break;
+      }
+    }
+
+    this.logger.log(`Fetched ${allBills.length} total bills from Congress ${congress}`);
+    return allBills;
   }
 }

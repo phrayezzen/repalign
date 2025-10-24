@@ -61,7 +61,7 @@ struct LoginView: View {
                                 .scaleEffect(0.8)
                         }
 
-                        Text("Sign In")
+                        Text("Log In")
                             .fontWeight(.semibold)
                     }
                     .frame(maxWidth: .infinity)
@@ -74,10 +74,10 @@ struct LoginView: View {
 
                 // Register Link
                 HStack {
-                    Text("Don't have an account?")
+                    Text("Need an account?")
                         .foregroundColor(.secondary)
 
-                    Button("Sign Up") {
+                    Button("Sign up") {
                         showingRegister = true
                     }
                     .foregroundColor(.red)

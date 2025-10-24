@@ -5,6 +5,7 @@ struct ProfileView: View {
     let user: User
     let citizenProfile: CitizenProfile?
     let legislatorProfile: LegislatorProfile?
+    var selectedTab: Binding<Int>?
     @State private var isFollowing = false
     @State private var showingTakeAction = false
     @EnvironmentObject private var authService: AuthService
@@ -212,7 +213,13 @@ struct ProfileView: View {
                 }
             }
 
-            Button(action: { showingTakeAction = true }) {
+            Button(action: {
+                if let selectedTab = selectedTab {
+                    selectedTab.wrappedValue = 4
+                } else {
+                    showingTakeAction = true
+                }
+            }) {
                 HStack {
                     Image(systemName: "megaphone")
                     Text("Take Action")
@@ -270,7 +277,13 @@ struct ProfileView: View {
                 }
             }
 
-            Button(action: { showingTakeAction = true }) {
+            Button(action: {
+                if let selectedTab = selectedTab {
+                    selectedTab.wrappedValue = 4
+                } else {
+                    showingTakeAction = true
+                }
+            }) {
                 HStack {
                     Image(systemName: "megaphone")
                     Text("Take Action")
@@ -544,12 +557,14 @@ struct ProfileFeedSection: View {
 }
 
 #Preview {
+    @Previewable @State var selectedTab = 1
     let user = MockDataProvider.createMockUsers().first!
     let citizenProfile = MockDataProvider.createMockCitizenProfiles().first!
 
     return ProfileView(
         user: user,
         citizenProfile: citizenProfile,
-        legislatorProfile: nil
+        legislatorProfile: nil,
+        selectedTab: $selectedTab
     )
 }

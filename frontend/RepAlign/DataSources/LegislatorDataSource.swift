@@ -66,11 +66,10 @@ class CongressAPIDataSource: LegislatorDataSourceProtocol {
 
 // MARK: - Backend Data Source
 class BackendAPIDataSource: LegislatorDataSourceProtocol {
-    private let baseURL = AppConfig.shared.backendBaseURL
-    private let session: URLSession
+    private let apiClient: APIClient
 
-    init(session: URLSession = .shared) {
-        self.session = session
+    init(apiClient: APIClient = .shared) {
+        self.apiClient = apiClient
     }
 
     func fetchAllCurrentLegislators() async throws -> [LegislatorProfile] {
@@ -80,23 +79,20 @@ class BackendAPIDataSource: LegislatorDataSourceProtocol {
 
     func fetchLegislators(limit: Int = 50, offset: Int = 0) async throws -> [LegislatorProfile] {
         print("DEBUG: BackendAPIDataSource.fetchLegislators() called with limit=\(limit), offset=\(offset)")
-        let url = URL(string: "\(baseURL)/legislators?limit=\(limit)&offset=\(offset)")!
-        print("DEBUG: Fetching from URL: \(url)")
 
-        let (data, response) = try await session.data(from: url)
-
-        guard let httpResponse = response as? HTTPURLResponse,
-              httpResponse.statusCode == 200 else {
-            print("DEBUG: Backend API error - status code: \((response as? HTTPURLResponse)?.statusCode ?? -1)")
+        do {
+            let backendResponse: BackendLegislatorsResponse = try await apiClient.get(
+                path: "/legislators?limit=\(limit)&offset=\(offset)",
+                requiresAuth: false
+            )
+            print("DEBUG: Decoded \(backendResponse.legislators.count) legislators from backend")
+            let mappedLegislators = backendResponse.legislators.compactMap { BackendLegislatorMapper.mapToDomain($0) }
+            print("DEBUG: Mapped \(mappedLegislators.count) legislators to domain objects")
+            return mappedLegislators
+        } catch {
+            print("DEBUG: Backend API error: \(error)")
             throw DataSourceError.networkError(URLError(.badServerResponse))
         }
-
-        print("DEBUG: Successfully received backend response, decoding...")
-        let backendResponse = try JSONDecoder().decode(BackendLegislatorsResponse.self, from: data)
-        print("DEBUG: Decoded \(backendResponse.legislators.count) legislators from backend")
-        let mappedLegislators = backendResponse.legislators.compactMap { BackendLegislatorMapper.mapToDomain($0) }
-        print("DEBUG: Mapped \(mappedLegislators.count) legislators to domain objects")
-        return mappedLegislators
     }
 
     func fetchLegislator(bioguideId: String) async throws -> LegislatorProfile? {
@@ -106,17 +102,15 @@ class BackendAPIDataSource: LegislatorDataSourceProtocol {
     }
 
     func fetchLegislatorsByState(state: String) async throws -> [LegislatorProfile] {
-        let url = URL(string: "\(baseURL)/legislators/states/\(state)")!
-
-        let (data, response) = try await session.data(from: url)
-
-        guard let httpResponse = response as? HTTPURLResponse,
-              httpResponse.statusCode == 200 else {
+        do {
+            let backendLegislators: [BackendLegislator] = try await apiClient.get(
+                path: "/legislators/states/\(state)",
+                requiresAuth: false
+            )
+            return backendLegislators.compactMap { BackendLegislatorMapper.mapToDomain($0) }
+        } catch {
             throw DataSourceError.networkError(URLError(.badServerResponse))
         }
-
-        let backendLegislators = try JSONDecoder().decode([BackendLegislator].self, from: data)
-        return backendLegislators.compactMap { BackendLegislatorMapper.mapToDomain($0) }
     }
 
     func fetchLegislatorsByParty(party: Party) async throws -> [LegislatorProfile] {

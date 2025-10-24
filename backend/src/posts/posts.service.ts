@@ -46,9 +46,9 @@ export class PostsService {
 
     const comment = this.commentRepository.create({
       postId,
-      userId,
+      authorId: userId,
       content,
-    });
+    } as any);
 
     const savedComment = await this.commentRepository.save(comment);
 
@@ -58,7 +58,7 @@ export class PostsService {
 
     // Return comment with author relation
     return this.commentRepository.findOne({
-      where: { id: savedComment.id },
+      where: { id: (savedComment as any).id },
       relations: ['author'],
     });
   }

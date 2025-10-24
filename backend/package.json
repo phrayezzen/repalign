@@ -22,7 +22,10 @@
     "cli": "ts-node -r tsconfig-paths/register src/cli.ts",
     "seed:legislators": "npm run cli seed:legislators",
     "seed:social": "npm run cli seed:social",
-    "seed:simple": "npm run cli seed:simple"
+    "seed:simple": "npm run cli seed:simple",
+    "seed:legislators-api": "ts-node -r tsconfig-paths/register src/database/seeders/seed-legislators.ts",
+    "seed:bills-api": "ts-node -r tsconfig-paths/register src/database/seeders/seed-bills.ts",
+    "seed:all-api": "npm run seed:legislators-api && npm run seed:bills-api"
   },
   "dependencies": {
     "@nestjs/common": "^10.0.0",

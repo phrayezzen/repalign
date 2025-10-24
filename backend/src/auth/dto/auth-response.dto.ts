@@ -31,5 +31,6 @@ export class AuthResponseDto {
     userType: UserType;
     profileImageUrl?: string;
     isVerified: boolean;
+    onboardingCompleted?: boolean;
   };
 }

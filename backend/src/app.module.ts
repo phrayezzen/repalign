@@ -29,6 +29,9 @@ import { Petition } from './congress/entities/petition.entity';
 import { PetitionSignature } from './congress/entities/petition-signature.entity';
 import { CampaignContributor } from './congress/entities/campaign-contributor.entity';
 import { Legislator } from './congress/entities/legislator.entity';
+import { LegislatorFollow } from './congress/entities/legislator-follow.entity';
+import { CommitteeMembership } from './congress/entities/committee-membership.entity';
+import { PressRelease } from './congress/entities/press-release.entity';
 import { Media } from './posts/entities/media.entity';
 import { Activity } from './gamification/entities/activity.entity';
 
@@ -64,6 +67,9 @@ import { Activity } from './gamification/entities/activity.entity';
           PetitionSignature,
           CampaignContributor,
           Legislator,
+          LegislatorFollow,
+          CommitteeMembership,
+          PressRelease,
           Activity,
         ];
 

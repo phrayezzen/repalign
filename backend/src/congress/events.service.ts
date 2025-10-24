@@ -88,7 +88,7 @@ export class EventService {
 
     // Load with creator relation
     const eventWithCreator = await this.eventRepository.findOne({
-      where: { id: savedEvent.id },
+      where: { id: (savedEvent as any).id },
       relations: ['creator'],
     });
 

@@ -13,19 +13,33 @@ struct MainTabView: View {
                 }
                 .tag(0)
 
-            TakeActionView()
+            MyProfileView(selectedTab: $selectedTab)
                 .tabItem {
-                    Image(systemName: "hand.raised.fill")
-                    Text("Take Action")
+                    Image(systemName: "person.fill")
+                    Text("Profile")
                 }
                 .tag(1)
 
-            MyProfileView()
+            OfficialsView()
                 .tabItem {
-                    Image(systemName: "person.circle.fill")
-                    Text("Profile")
+                    Image(systemName: "building.columns.fill")
+                    Text("Officials")
                 }
                 .tag(2)
+
+            LeaderboardView()
+                .tabItem {
+                    Image(systemName: "trophy.fill")
+                    Text("Leaderboard")
+                }
+                .tag(3)
+
+            TakeActionView()
+                .tabItem {
+                    Image(systemName: "megaphone.fill")
+                    Text("Take Action")
+                }
+                .tag(4)
         }
         .accentColor(.red)
     }

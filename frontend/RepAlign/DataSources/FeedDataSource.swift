@@ -5,51 +5,36 @@ protocol FeedDataSource {
 }
 
 class BackendFeedDataSource: FeedDataSource {
-    private let baseURL: String
-    private let session: URLSession
+    private let apiClient: APIClient
 
-    init(baseURL: String = AppConfig.shared.backendBaseURL, session: URLSession = .shared) {
-        self.baseURL = baseURL
-        self.session = session
+    init(apiClient: APIClient = .shared) {
+        self.apiClient = apiClient
     }
 
     func fetchFeed(page: Int = 1, limit: Int = 20, search: String? = nil) async throws -> FeedResponse {
-        var components = URLComponents(string: "\(baseURL)/feed")!
-        components.queryItems = [
-            URLQueryItem(name: "page", value: String(page)),
-            URLQueryItem(name: "limit", value: String(limit))
-        ]
+        var path = "/feed?page=\(page)&limit=\(limit)"
 
         if let search = search, !search.isEmpty {
-            components.queryItems?.append(URLQueryItem(name: "search", value: search))
+            path += "&search=\(search.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? search)"
         }
-
-        guard let url = components.url else {
-            throw FeedError.invalidURL
-        }
-
-        var request = URLRequest(url: url)
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
 
         do {
-            let (data, response) = try await session.data(for: request)
-
-            guard let httpResponse = response as? HTTPURLResponse else {
+            return try await apiClient.get(path: path, requiresAuth: false)
+        } catch let error as APIClientError {
+            switch error {
+            case .invalidURL:
+                throw FeedError.invalidURL
+            case .invalidResponse:
                 throw FeedError.invalidResponse
-            }
-
-            guard httpResponse.statusCode == 200 else {
-                throw FeedError.serverError(httpResponse.statusCode)
-            }
-
-            let decoder = JSONDecoder()
-            decoder.dateDecodingStrategy = .iso8601
-
-            return try decoder.decode(FeedResponse.self, from: data)
-        } catch {
-            if error is FeedError {
-                throw error
-            } else {
+            case .httpError(let statusCode, _):
+                throw FeedError.serverError(statusCode)
+            case .decodingError(let decodingError):
+                throw FeedError.decodingError(decodingError)
+            case .networkError(let networkError):
+                throw FeedError.networkError(networkError)
+            case .unauthorized:
+                throw FeedError.serverError(401)
+            default:
                 throw FeedError.networkError(error)
             }
         }

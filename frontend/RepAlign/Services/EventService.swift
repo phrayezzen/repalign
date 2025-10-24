@@ -3,47 +3,16 @@ import UIKit
 
 class EventService {
     static let shared = EventService()
-    private let baseURL = "http://localhost:3000"
+    private let apiClient = APIClient.shared
 
     private init() {}
 
     func rsvpToEvent(eventId: String) async throws {
-        guard let url = URL(string: "\(baseURL)/congress/events/\(eventId)/rsvp") else {
-            throw EventError.invalidURL
-        }
-
-        var request = URLRequest(url: url)
-        request.httpMethod = "POST"
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-
-        // TODO: Add authentication token when available
-        // request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
-
-        let (_, response) = try await URLSession.shared.data(for: request)
-
-        guard let httpResponse = response as? HTTPURLResponse,
-              httpResponse.statusCode == 201 else {
-            throw EventError.rsvpFailed
-        }
+        try await apiClient.post(path: "/congress/events/\(eventId)/rsvp", requiresAuth: true)
     }
 
     func cancelRSVP(eventId: String) async throws {
-        guard let url = URL(string: "\(baseURL)/congress/events/\(eventId)/rsvp") else {
-            throw EventError.invalidURL
-        }
-
-        var request = URLRequest(url: url)
-        request.httpMethod = "DELETE"
-
-        // TODO: Add authentication token when available
-        // request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
-
-        let (_, response) = try await URLSession.shared.data(for: request)
-
-        guard let httpResponse = response as? HTTPURLResponse,
-              httpResponse.statusCode == 200 else {
-            throw EventError.cancelRSVPFailed
-        }
+        try await apiClient.delete(path: "/congress/events/\(eventId)/rsvp", requiresAuth: true)
     }
 
     func getDirections(to address: String) {

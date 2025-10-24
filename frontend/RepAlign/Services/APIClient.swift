@@ -78,6 +78,10 @@ class APIClient {
             // Backend sends camelCase, so no conversion needed
             return try decoder.decode(T.self, from: data)
         } catch {
+            print("❌ Decoding error for \(T.self): \(error)")
+            if let responseString = String(data: data, encoding: .utf8) {
+                print("❌ Failed to decode this data: \(responseString)")
+            }
             throw APIClientError.decodingError(error)
         }
     }
@@ -99,6 +103,9 @@ class APIClient {
         // Set default headers
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         request.setValue("application/json", forHTTPHeaderField: "Accept")
+
+        // Add ngrok header to bypass browser warning (required for ngrok tunnels)
+        request.setValue("1", forHTTPHeaderField: "ngrok-skip-browser-warning")
 
         // Add authentication if required or if token is available
         if requiresAuth || authToken != nil {
@@ -127,10 +134,21 @@ class APIClient {
 
         // Perform request
         do {
+            print("🔵 APIClient: Starting \(method.rawValue) request to: \(url.absoluteString)")
+            print("🔵 Headers: \(request.allHTTPHeaderFields ?? [:])")
+
             let (data, response) = try await session.data(for: request)
 
             guard let httpResponse = response as? HTTPURLResponse else {
+                print("❌ APIClient: Invalid response for \(path)")
                 throw APIClientError.invalidResponse
+            }
+
+            // Log response for debugging - ALWAYS log response body
+            print("📡 APIClient: \(method.rawValue) \(path) -> \(httpResponse.statusCode)")
+            print("📡 Response headers: \(httpResponse.allHeaderFields)")
+            if let responseString = String(data: data, encoding: .utf8) {
+                print("📡 Response body (\(data.count) bytes): \(responseString.prefix(500))...")
             }
 
             // Check status code
@@ -145,6 +163,7 @@ class APIClient {
         } catch let error as APIClientError {
             throw error
         } catch {
+            print("❌ APIClient network error for \(path): \(error.localizedDescription)")
             throw APIClientError.networkError(error)
         }
     }

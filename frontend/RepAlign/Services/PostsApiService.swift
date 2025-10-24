@@ -43,199 +43,50 @@ struct MessageResponse: Codable {
 
 class PostsApiService: ObservableObject {
     static let shared = PostsApiService()
-
-    private let baseURL = "http://localhost:3000/api/v1"
-    private var authToken: String? {
-        UserDefaults.standard.string(forKey: "authToken")
-    }
+    private let apiClient = APIClient.shared
 
     private init() {}
 
     // MARK: - Post Methods
 
     func getPost(id: String) async throws -> PostResponse {
-        guard let url = URL(string: "\(baseURL)/posts/\(id)") else {
-            throw APIError.invalidURL
-        }
-
-        let (data, response) = try await URLSession.shared.data(from: url)
-
-        guard let httpResponse = response as? HTTPURLResponse,
-              httpResponse.statusCode == 200 else {
-            throw APIError.invalidResponse
-        }
-
-        return try JSONDecoder().decode(PostResponse.self, from: data)
+        try await apiClient.get(path: "/posts/\(id)")
     }
 
     func getPostComments(postId: String) async throws -> [CommentResponse] {
-        guard let url = URL(string: "\(baseURL)/posts/\(postId)/comments") else {
-            throw APIError.invalidURL
-        }
-
-        let (data, response) = try await URLSession.shared.data(from: url)
-
-        guard let httpResponse = response as? HTTPURLResponse,
-              httpResponse.statusCode == 200 else {
-            throw APIError.invalidResponse
-        }
-
-        return try JSONDecoder().decode([CommentResponse].self, from: data)
+        try await apiClient.get(path: "/posts/\(postId)/comments")
     }
 
     func createComment(postId: String, content: String) async throws -> CommentResponse {
-        guard let url = URL(string: "\(baseURL)/posts/\(postId)/comments") else {
-            throw APIError.invalidURL
-        }
-
-        var request = URLRequest(url: url)
-        request.httpMethod = "POST"
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-
-        if let token = authToken {
-            request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
-        }
-
         let requestBody = CreateCommentRequest(content: content)
-        request.httpBody = try JSONEncoder().encode(requestBody)
-
-        let (data, response) = try await URLSession.shared.data(for: request)
-
-        guard let httpResponse = response as? HTTPURLResponse,
-              httpResponse.statusCode == 201 else {
-            throw APIError.invalidResponse
-        }
-
-        return try JSONDecoder().decode(CommentResponse.self, from: data)
+        return try await apiClient.post(path: "/posts/\(postId)/comments", body: requestBody, requiresAuth: true)
     }
 
     // MARK: - Like Methods
 
     func likePost(id: String) async throws {
-        guard let url = URL(string: "\(baseURL)/posts/\(id)/like") else {
-            throw APIError.invalidURL
-        }
-
-        var request = URLRequest(url: url)
-        request.httpMethod = "POST"
-
-        if let token = authToken {
-            request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
-        }
-
-        let (_, response) = try await URLSession.shared.data(for: request)
-
-        guard let httpResponse = response as? HTTPURLResponse,
-              httpResponse.statusCode == 200 else {
-            throw APIError.invalidResponse
-        }
+        try await apiClient.post(path: "/posts/\(id)/like", requiresAuth: true)
     }
 
     func unlikePost(id: String) async throws {
-        guard let url = URL(string: "\(baseURL)/posts/\(id)/like") else {
-            throw APIError.invalidURL
-        }
-
-        var request = URLRequest(url: url)
-        request.httpMethod = "DELETE"
-
-        if let token = authToken {
-            request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
-        }
-
-        let (_, response) = try await URLSession.shared.data(for: request)
-
-        guard let httpResponse = response as? HTTPURLResponse,
-              httpResponse.statusCode == 200 else {
-            throw APIError.invalidResponse
-        }
+        try await apiClient.delete(path: "/posts/\(id)/like", requiresAuth: true)
     }
 
     func getPostLikeStatus(id: String) async throws -> Bool {
-        guard let url = URL(string: "\(baseURL)/posts/\(id)/like-status") else {
-            throw APIError.invalidURL
-        }
-
-        var request = URLRequest(url: url)
-        if let token = authToken {
-            request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
-        }
-
-        let (data, response) = try await URLSession.shared.data(for: request)
-
-        guard let httpResponse = response as? HTTPURLResponse,
-              httpResponse.statusCode == 200 else {
-            throw APIError.invalidResponse
-        }
-
-        let likeStatus = try JSONDecoder().decode(LikeStatusResponse.self, from: data)
+        let likeStatus: LikeStatusResponse = try await apiClient.get(path: "/posts/\(id)/like-status", requiresAuth: true)
         return likeStatus.isLiked
     }
 
     func likeComment(id: String) async throws {
-        guard let url = URL(string: "\(baseURL)/comments/\(id)/like") else {
-            throw APIError.invalidURL
-        }
-
-        var request = URLRequest(url: url)
-        request.httpMethod = "POST"
-
-        if let token = authToken {
-            request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
-        }
-
-        let (_, response) = try await URLSession.shared.data(for: request)
-
-        guard let httpResponse = response as? HTTPURLResponse,
-              httpResponse.statusCode == 200 else {
-            throw APIError.invalidResponse
-        }
+        try await apiClient.post(path: "/comments/\(id)/like", requiresAuth: true)
     }
 
     func unlikeComment(id: String) async throws {
-        guard let url = URL(string: "\(baseURL)/comments/\(id)/like") else {
-            throw APIError.invalidURL
-        }
-
-        var request = URLRequest(url: url)
-        request.httpMethod = "DELETE"
-
-        if let token = authToken {
-            request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
-        }
-
-        let (_, response) = try await URLSession.shared.data(for: request)
-
-        guard let httpResponse = response as? HTTPURLResponse,
-              httpResponse.statusCode == 200 else {
-            throw APIError.invalidResponse
-        }
+        try await apiClient.delete(path: "/comments/\(id)/like", requiresAuth: true)
     }
 
     func getCommentLikeStatus(id: String) async throws -> Bool {
-        guard let url = URL(string: "\(baseURL)/comments/\(id)/like-status") else {
-            throw APIError.invalidURL
-        }
-
-        var request = URLRequest(url: url)
-        if let token = authToken {
-            request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
-        }
-
-        let (data, response) = try await URLSession.shared.data(for: request)
-
-        guard let httpResponse = response as? HTTPURLResponse,
-              httpResponse.statusCode == 200 else {
-            throw APIError.invalidResponse
-        }
-
-        let likeStatus = try JSONDecoder().decode(LikeStatusResponse.self, from: data)
+        let likeStatus: LikeStatusResponse = try await apiClient.get(path: "/comments/\(id)/like-status", requiresAuth: true)
         return likeStatus.isLiked
     }
-}
-
-enum APIError: Error {
-    case invalidURL
-    case invalidResponse
-    case decodingError
 }

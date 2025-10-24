@@ -2,6 +2,7 @@ import SwiftUI
 import SwiftData
 
 struct MyProfileView: View {
+    @Binding var selectedTab: Int
     @Query private var users: [User]
     @Query private var citizenProfiles: [CitizenProfile]
     @Query private var legislatorProfiles: [LegislatorProfile]
@@ -14,7 +15,8 @@ struct MyProfileView: View {
                     ProfileView(
                         user: currentUser,
                         citizenProfile: getCurrentCitizenProfile(),
-                        legislatorProfile: getCurrentLegislatorProfile()
+                        legislatorProfile: getCurrentLegislatorProfile(),
+                        selectedTab: $selectedTab
                     )
                 } else {
                     VStack(spacing: 20) {
@@ -52,6 +54,7 @@ struct MyProfileView: View {
 }
 
 #Preview {
+    @Previewable @State var selectedTab = 1
     let config = ModelConfiguration(isStoredInMemoryOnly: true)
     let container = try! ModelContainer(
         for: User.self, CitizenProfile.self, LegislatorProfile.self,
@@ -72,6 +75,6 @@ struct MyProfileView: View {
         container.mainContext.insert(profile)
     }
 
-    return MyProfileView()
+    return MyProfileView(selectedTab: $selectedTab)
         .modelContainer(container)
 }

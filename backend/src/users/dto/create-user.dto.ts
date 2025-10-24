@@ -1,4 +1,4 @@
-import { IsEmail, IsEnum, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { IsEmail, IsEnum, IsNotEmpty, IsOptional, IsString, IsBoolean } from 'class-validator';
 import { UserType } from '../entities/user.entity';
 
 export class CreateUserDto {
@@ -19,8 +19,8 @@ export class CreateUserDto {
   displayName: string;
 
   @IsString()
-  @IsNotEmpty()
-  location: string;
+  @IsOptional()
+  location?: string;
 
   @IsEnum(UserType)
   userType: UserType;
@@ -32,4 +32,8 @@ export class CreateUserDto {
   @IsString()
   @IsOptional()
   profileImageUrl?: string;
+
+  @IsBoolean()
+  @IsOptional()
+  onboardingCompleted?: boolean;
 }

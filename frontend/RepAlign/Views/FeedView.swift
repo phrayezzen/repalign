@@ -9,6 +9,7 @@ struct FeedView: View {
     @State private var isLoadingMore = false
     @State private var errorMessage: String?
     @State private var showError = false
+    @State private var showPetitions = false
 
     private let filterOptions: [(String, FeedItemType?)] = [
         ("General", nil),
@@ -49,7 +50,10 @@ struct FeedView: View {
                 // Filter Tabs
                 FilterTabsView(
                     options: filterOptions,
-                    selectedFilter: $selectedFilter
+                    selectedFilter: $selectedFilter,
+                    onPetitionsTab: {
+                        showPetitions = true
+                    }
                 )
                 .padding(.horizontal)
 
@@ -90,6 +94,9 @@ struct FeedView: View {
             } message: {
                 Text(errorMessage ?? "An unexpected error occurred")
             }
+        }
+        .fullScreenCover(isPresented: $showPetitions) {
+            PetitionsView()
         }
     }
 
@@ -190,6 +197,7 @@ struct SearchBar: View {
 struct FilterTabsView: View {
     let options: [(String, FeedItemType?)]
     @Binding var selectedFilter: FeedItemType?
+    let onPetitionsTab: () -> Void
 
     var body: some View {
         ScrollView(.horizontal, showsIndicators: false) {
@@ -199,7 +207,12 @@ struct FilterTabsView: View {
                         title: option.0,
                         isSelected: selectedFilter == option.1,
                         action: {
-                            selectedFilter = selectedFilter == option.1 ? nil : option.1
+                            // Special handling for Petitions
+                            if option.0 == "Petitions" {
+                                onPetitionsTab()
+                            } else {
+                                selectedFilter = selectedFilter == option.1 ? nil : option.1
+                            }
                         }
                     )
                 }

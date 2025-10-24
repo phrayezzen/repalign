@@ -41,7 +41,6 @@ export class AuthService {
       password: hashedPassword,
       displayName,
       userType: UserType.CITIZEN, // Default type
-      onboardingCompleted: false, // Must complete onboarding
     });
 
     // Generate tokens
@@ -57,6 +56,7 @@ export class AuthService {
         userType: user.userType,
         profileImageUrl: user.profileImageUrl,
         isVerified: user.isVerified,
+        onboardingCompleted: user.onboardingCompleted,
       },
     };
   }
@@ -74,6 +74,7 @@ export class AuthService {
         userType: user.userType,
         profileImageUrl: user.profileImageUrl,
         isVerified: user.isVerified,
+        onboardingCompleted: user.onboardingCompleted,
       },
     };
   }

@@ -17,7 +17,7 @@ struct AppConfig {
     let currentCongress = 118
 
     // Backend Configuration
-    let backendBaseURL = "http://localhost:3000/api/v1"
+    let backendBaseURL = "https://repalign-production.up.railway.app/api/v1"
 
     // Caching Configuration
     let cacheRefreshInterval: TimeInterval = 24 * 60 * 60 // 24 hours

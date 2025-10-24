@@ -17,6 +17,11 @@ struct AuthResponse: Codable {
     let accessToken: String
     let refreshToken: String
     let user: UserProfile
+    let expiresIn: Int?  // Optional - backend may include this
+
+    enum CodingKeys: String, CodingKey {
+        case accessToken, refreshToken, user, expiresIn
+    }
 }
 
 struct UserProfile: Codable {
@@ -64,19 +69,10 @@ class AuthService: ObservableObject {
     @Published var currentUser: UserProfile?
     @Published var isLoading = false
 
-    private let baseURL: String
+    private let apiClient = APIClient.shared
     private var cancellables = Set<AnyCancellable>()
 
-    private var authBaseURL: String {
-        "\(baseURL)/auth"
-    }
-
-    private var onboardingBaseURL: String {
-        "\(baseURL)/users/me/onboarding"
-    }
-
     private init() {
-        self.baseURL = AppConfig.shared.backendBaseURL
         checkAuthenticationStatus()
     }
 
@@ -101,33 +97,15 @@ class AuthService: ObservableObject {
         isLoading = true
         defer { isLoading = false }
 
-        guard let url = URL(string: "\(authBaseURL)/login") else {
-            throw AuthError.invalidResponse
-        }
-
-        var request = URLRequest(url: url)
-        request.httpMethod = "POST"
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-
         let loginRequest = LoginRequest(usernameOrEmail: usernameOrEmail, password: password)
-        request.httpBody = try JSONEncoder().encode(loginRequest)
 
         do {
-            let (data, response) = try await URLSession.shared.data(for: request)
-
-            guard let httpResponse = response as? HTTPURLResponse else {
-                throw AuthError.networkError
-            }
-
-            if httpResponse.statusCode == 401 {
-                throw AuthError.invalidCredentials
-            }
-
-            guard httpResponse.statusCode == 200 else {
-                throw AuthError.invalidResponse
-            }
-
-            let authResponse = try JSONDecoder().decode(AuthResponse.self, from: data)
+            let authResponse: AuthResponse = try await apiClient.request(
+                path: "/auth/login",
+                method: .post,
+                body: loginRequest,
+                additionalHeaders: ["ngrok-skip-browser-warning": "1"]
+            )
 
             try KeychainManager.shared.saveAccessToken(authResponse.accessToken)
             try KeychainManager.shared.saveRefreshToken(authResponse.refreshToken)
@@ -135,6 +113,11 @@ class AuthService: ObservableObject {
             currentUser = authResponse.user
             isAuthenticated = true
 
+        } catch let error as APIClientError {
+            if case .httpError(let statusCode, _) = error, statusCode == 401 {
+                throw AuthError.invalidCredentials
+            }
+            throw AuthError.networkError
         } catch let error as AuthError {
             throw error
         } catch {
@@ -147,38 +130,20 @@ class AuthService: ObservableObject {
         isLoading = true
         defer { isLoading = false }
 
-        guard let url = URL(string: "\(authBaseURL)/register") else {
-            throw AuthError.invalidResponse
-        }
-
-        var request = URLRequest(url: url)
-        request.httpMethod = "POST"
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-
         let registerRequest = RegisterRequest(
             username: username,
             email: email,
             password: password,
             displayName: displayName
         )
-        request.httpBody = try JSONEncoder().encode(registerRequest)
 
         do {
-            let (data, response) = try await URLSession.shared.data(for: request)
-
-            guard let httpResponse = response as? HTTPURLResponse else {
-                throw AuthError.networkError
-            }
-
-            if httpResponse.statusCode == 409 {
-                throw AuthError.userExists
-            }
-
-            guard httpResponse.statusCode == 201 else {
-                throw AuthError.invalidResponse
-            }
-
-            let authResponse = try JSONDecoder().decode(AuthResponse.self, from: data)
+            let authResponse: AuthResponse = try await apiClient.request(
+                path: "/auth/register",
+                method: .post,
+                body: registerRequest,
+                additionalHeaders: ["ngrok-skip-browser-warning": "1"]
+            )
 
             try KeychainManager.shared.saveAccessToken(authResponse.accessToken)
             try KeychainManager.shared.saveRefreshToken(authResponse.refreshToken)
@@ -186,6 +151,11 @@ class AuthService: ObservableObject {
             currentUser = authResponse.user
             isAuthenticated = true
 
+        } catch let error as APIClientError {
+            if case .httpError(let statusCode, _) = error, statusCode == 409 {
+                throw AuthError.userExists
+            }
+            throw AuthError.networkError
         } catch let error as AuthError {
             throw error
         } catch {
@@ -209,46 +179,30 @@ class AuthService: ObservableObject {
     }
 
     private func callLogoutEndpoint(token: String) async {
-        guard let url = URL(string: "\(authBaseURL)/logout") else { return }
-
-        var request = URLRequest(url: url)
-        request.httpMethod = "POST"
-        request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
-
         // Fire and forget - don't wait for response
-        _ = try? await URLSession.shared.data(for: request)
+        try? await apiClient.post(path: "/auth/logout", requiresAuth: true)
     }
 
     private func fetchCurrentUser() async {
-        guard let token = authToken,
-              let url = URL(string: "\(authBaseURL)/profile") else {
+        guard authToken != nil else {
             await MainActor.run {
                 logout()
             }
             return
         }
 
-        var request = URLRequest(url: url)
-        request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
-
         do {
-            let (data, response) = try await URLSession.shared.data(for: request)
-
-            guard let httpResponse = response as? HTTPURLResponse,
-                  httpResponse.statusCode == 200 else {
-                await MainActor.run {
-                    logout()
-                }
-                return
-            }
-
-            let user = try JSONDecoder().decode(UserProfile.self, from: data)
+            let user: UserProfile = try await apiClient.get(path: "/auth/profile", requiresAuth: true)
 
             await MainActor.run {
                 currentUser = user
                 isAuthenticated = true
             }
         } catch {
+            print("❌ Failed to fetch current user: \(error)")
+            if let apiError = error as? APIClientError {
+                print("❌ API Error: \(apiError.errorDescription ?? "Unknown")")
+            }
             await MainActor.run {
                 logout()
             }
@@ -256,131 +210,107 @@ class AuthService: ObservableObject {
     }
 
     func refreshAuthToken() async throws {
-        guard let refreshToken = refreshToken,
-              let url = URL(string: "\(authBaseURL)/refresh") else {
+        guard let refreshToken = refreshToken else {
             throw AuthError.tokenExpired
         }
 
-        var request = URLRequest(url: url)
-        request.httpMethod = "POST"
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        struct RefreshTokenRequest: Codable {
+            let refreshToken: String
+        }
 
-        // Send refresh token in body, not header
-        let body = ["refreshToken": refreshToken]
-        request.httpBody = try JSONSerialization.data(withJSONObject: body)
+        do {
+            let requestBody = RefreshTokenRequest(refreshToken: refreshToken)
+            let authResponse: AuthResponse = try await apiClient.post(
+                path: "/auth/refresh",
+                body: requestBody
+            )
 
-        let (data, response) = try await URLSession.shared.data(for: request)
-
-        guard let httpResponse = response as? HTTPURLResponse,
-              httpResponse.statusCode == 200 else {
+            try KeychainManager.shared.saveAccessToken(authResponse.accessToken)
+            try KeychainManager.shared.saveRefreshToken(authResponse.refreshToken)
+        } catch {
             await MainActor.run {
                 logout()
             }
             throw AuthError.tokenExpired
         }
-
-        let authResponse = try JSONDecoder().decode(AuthResponse.self, from: data)
-
-        try KeychainManager.shared.saveAccessToken(authResponse.accessToken)
-        try KeychainManager.shared.saveRefreshToken(authResponse.refreshToken)
     }
 
     // MARK: - Onboarding Methods
 
     @MainActor
     func updateUserType(userType: String) async throws {
-        guard let token = authToken,
-              let url = URL(string: "\(onboardingBaseURL)/user-type") else {
-            throw AuthError.invalidResponse
+        struct UserTypeRequest: Codable {
+            let userType: String
         }
 
-        var request = URLRequest(url: url)
-        request.httpMethod = "PATCH"
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
-
-        let body = ["userType": userType]
-        request.httpBody = try JSONSerialization.data(withJSONObject: body)
-
-        let (_, response) = try await URLSession.shared.data(for: request)
-
-        guard let httpResponse = response as? HTTPURLResponse,
-              httpResponse.statusCode == 200 else {
+        do {
+            let requestBody = UserTypeRequest(userType: userType)
+            let _: EmptyResponse = try await apiClient.request(
+                path: "/users/me/onboarding/user-type",
+                method: .patch,
+                body: requestBody,
+                requiresAuth: true
+            )
+        } catch {
             throw AuthError.networkError
         }
     }
 
+    private struct EmptyResponse: Codable {}
+
     @MainActor
     func updateLocation(state: String, congressionalDistrict: String?, city: String) async throws {
-        guard let token = authToken,
-              let url = URL(string: "\(onboardingBaseURL)/location") else {
-            throw AuthError.invalidResponse
+        struct LocationRequest: Codable {
+            let state: String
+            let city: String
+            let congressionalDistrict: String?
         }
 
-        var request = URLRequest(url: url)
-        request.httpMethod = "PATCH"
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
-
-        var body: [String: Any] = [
-            "state": state,
-            "city": city
-        ]
-        if let district = congressionalDistrict {
-            body["congressionalDistrict"] = district
-        }
-        request.httpBody = try JSONSerialization.data(withJSONObject: body)
-
-        let (_, response) = try await URLSession.shared.data(for: request)
-
-        guard let httpResponse = response as? HTTPURLResponse,
-              httpResponse.statusCode == 200 else {
+        do {
+            let requestBody = LocationRequest(
+                state: state,
+                city: city,
+                congressionalDistrict: congressionalDistrict
+            )
+            let _: EmptyResponse = try await apiClient.request(
+                path: "/users/me/onboarding/location",
+                method: .patch,
+                body: requestBody,
+                requiresAuth: true
+            )
+        } catch {
             throw AuthError.networkError
         }
     }
 
     @MainActor
     func updateInterests(causes: [String]) async throws {
-        guard let token = authToken,
-              let url = URL(string: "\(onboardingBaseURL)/interests") else {
-            throw AuthError.invalidResponse
+        struct InterestsRequest: Codable {
+            let causes: [String]
         }
 
-        var request = URLRequest(url: url)
-        request.httpMethod = "PATCH"
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
-
-        let body = ["causes": causes]
-        request.httpBody = try JSONSerialization.data(withJSONObject: body)
-
-        let (_, response) = try await URLSession.shared.data(for: request)
-
-        guard let httpResponse = response as? HTTPURLResponse,
-              httpResponse.statusCode == 200 else {
+        do {
+            let requestBody = InterestsRequest(causes: causes)
+            let _: EmptyResponse = try await apiClient.request(
+                path: "/users/me/onboarding/interests",
+                method: .patch,
+                body: requestBody,
+                requiresAuth: true
+            )
+        } catch {
             throw AuthError.networkError
         }
     }
 
     @MainActor
     func completeOnboarding() async throws {
-        guard let token = authToken,
-              let url = URL(string: "\(onboardingBaseURL)/complete") else {
-            throw AuthError.invalidResponse
-        }
+        do {
+            try await apiClient.post(path: "/users/me/onboarding/complete", requiresAuth: true)
 
-        var request = URLRequest(url: url)
-        request.httpMethod = "POST"
-        request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
-
-        let (_, response) = try await URLSession.shared.data(for: request)
-
-        guard let httpResponse = response as? HTTPURLResponse,
-              httpResponse.statusCode == 200 else {
+            // Refresh user profile after completing onboarding
+            await fetchCurrentUser()
+        } catch {
             throw AuthError.networkError
         }
-
-        // Refresh user profile after completing onboarding
-        await fetchCurrentUser()
     }
 }

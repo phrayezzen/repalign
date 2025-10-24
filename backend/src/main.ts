@@ -5,6 +5,7 @@ import { ConfigService } from '@nestjs/config';
 import helmet from 'helmet';
 import * as compression from 'compression';
 import { AppModule } from './app.module';
+import { LoggingInterceptor } from './common/interceptors/logging.interceptor';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -17,19 +18,13 @@ async function bootstrap() {
   app.use(helmet());
   app.use(compression());
 
-  // CORS configuration
+  // CORS configuration - Allow all origins for development
   app.enableCors({
-    origin: [
-      configService.get('FRONTEND_URL'),
-      'http://localhost:3000',
-      'http://localhost:3001',
-      // iOS app will connect directly
-      'capacitor://localhost',
-      'ionic://localhost',
-    ],
+    origin: true, // Allow all origins for testing
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'Accept'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'Accept', 'ngrok-skip-browser-warning'],
+    exposedHeaders: ['Content-Type', 'Authorization'],
   });
 
   // Global validation
@@ -40,6 +35,9 @@ async function bootstrap() {
       forbidNonWhitelisted: true,
     }),
   );
+
+  // Global logging interceptor
+  app.useGlobalInterceptors(new LoggingInterceptor());
 
   // API prefix
   app.setGlobalPrefix(apiPrefix);

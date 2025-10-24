@@ -53,6 +53,23 @@ export class Legislator {
   @Column({ default: 0 })
   yearsInOffice: number; // "6 years in office"
 
+  @Column({ name: 'follower_count', default: 0 })
+  followerCount: number;
+
+  // Contact Information
+  @Column({ name: 'phone_number', nullable: true })
+  phoneNumber: string; // Office phone: "(202) 224-4543"
+
+  @Column({ name: 'website_url', nullable: true })
+  websiteUrl: string; // Official website
+
+  @Column({ name: 'office_address', nullable: true })
+  officeAddress: string; // "Washington, DC Office"
+
+  // About/Bio
+  @Column({ type: 'text', nullable: true })
+  bio: string; // Biography/about text
+
   // External IDs for data import
   @Column({ unique: true })
   bioguideId: string; // Official Congressional Bioguide ID
