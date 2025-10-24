@@ -91,10 +91,11 @@ import { Activity } from './gamification/entities/activity.entity';
             type: 'postgres',
             url: databaseUrl,
             entities,
-            synchronize: configService.get('NODE_ENV') === 'production',
+            synchronize: true,  // Enable for Railway (no migrations yet)
             logging: true,  // Enable logging to debug Railway issues
             migrations: [__dirname + '/database/migrations/*{.ts,.js}'],
             migrationsRun: false,  // Disable auto-migrations for now
+            ssl: false,  // Railway internal postgres doesn't need SSL
           };
         }
 
