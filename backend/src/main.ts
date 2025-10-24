@@ -60,9 +60,9 @@ async function bootstrap() {
     SwaggerModule.setup('docs', app, document);
   }
 
-  await app.listen(port);
-  console.log(`🚀 RepAlign API is running on: http://localhost:${port}/${apiPrefix}`);
-  console.log(`📖 Swagger docs available at: http://localhost:${port}/docs`);
+  await app.listen(port, '0.0.0.0');
+  console.log(`🚀 RepAlign API is running on: http://0.0.0.0:${port}/${apiPrefix}`);
+  console.log(`📖 Swagger docs available at: http://0.0.0.0:${port}/docs`);
 }
 
 bootstrap();
