@@ -76,6 +76,25 @@ class APIClient {
         do {
             let decoder = JSONDecoder()
             // Backend sends camelCase, so no conversion needed
+            // Configure date decoding for ISO 8601 format with milliseconds from backend
+            let formatter = ISO8601DateFormatter()
+            formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+            decoder.dateDecodingStrategy = .custom { decoder in
+                let container = try decoder.singleValueContainer()
+                let dateString = try container.decode(String.self)
+
+                if let date = formatter.date(from: dateString) {
+                    return date
+                }
+
+                // Fallback to standard ISO8601 without milliseconds
+                formatter.formatOptions = [.withInternetDateTime]
+                if let date = formatter.date(from: dateString) {
+                    return date
+                }
+
+                throw DecodingError.dataCorruptedError(in: container, debugDescription: "Invalid date format: \(dateString)")
+            }
             return try decoder.decode(T.self, from: data)
         } catch {
             print("❌ Decoding error for \(T.self): \(error)")

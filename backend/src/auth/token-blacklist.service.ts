@@ -24,10 +24,24 @@ export class TokenBlacklistService implements OnModuleInit {
         port: this.configService.get('REDIS_PORT') || 6379,
         password: this.configService.get('REDIS_PASSWORD') || undefined,
         db: 1, // Use separate database for blacklist
+        retryStrategy: () => null, // Disable retries
+        maxRetriesPerRequest: 0,
+        lazyConnect: true, // Don't connect immediately
       });
+
+      // Add error handler before connecting
+      this.redis.on('error', (error) => {
+        this.logger.error('Redis error:', error.message);
+      });
+
+      // Try to connect
+      await this.redis.connect();
       this.logger.log('Redis connection established for token blacklist');
     } catch (error) {
       this.logger.error('Failed to connect to Redis - token blacklist will be disabled', error);
+      if (this.redis) {
+        this.redis.disconnect();
+      }
       this.redis = null;
     }
   }

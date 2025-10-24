@@ -6,7 +6,24 @@ enum DataSourceType {
     case mockData
 }
 
-struct AppConfig {
+enum BackendEnvironment: String, CaseIterable {
+    case railway = "Railway (Production)"
+    case ngrok = "ngrok (Development)"
+    case local = "Local Development"
+
+    var baseURL: String {
+        switch self {
+        case .railway:
+            return "https://repalign-production.up.railway.app/api/v1"
+        case .ngrok:
+            return "https://cb8d68003a08.ngrok-free.app/api/v1"
+        case .local:
+            return "http://localhost:3000/api/v1"
+        }
+    }
+}
+
+class AppConfig {
     static let shared = AppConfig()
 
     let dataSource: DataSourceType = .customBackend
@@ -17,7 +34,25 @@ struct AppConfig {
     let currentCongress = 118
 
     // Backend Configuration
-    let backendBaseURL = "https://repalign-production.up.railway.app/api/v1"
+    private let backendEnvironmentKey = "selectedBackendEnvironment"
+
+    var backendEnvironment: BackendEnvironment {
+        get {
+            return .ngrok
+            if let savedValue = UserDefaults.standard.string(forKey: backendEnvironmentKey),
+               let environment = BackendEnvironment(rawValue: savedValue) {
+                return environment
+            }
+            return .railway // Default to Railway
+        }
+        set {
+            UserDefaults.standard.set(newValue.rawValue, forKey: backendEnvironmentKey)
+        }
+    }
+
+    var backendBaseURL: String {
+        return backendEnvironment.baseURL
+    }
 
     // Caching Configuration
     let cacheRefreshInterval: TimeInterval = 24 * 60 * 60 // 24 hours
