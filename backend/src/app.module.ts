@@ -84,6 +84,21 @@ import { Activity } from './gamification/entities/activity.entity';
           };
         }
 
+        // Support both DATABASE_URL (Railway) and individual variables
+        const databaseUrl = configService.get('DATABASE_URL');
+        if (databaseUrl) {
+          return {
+            type: 'postgres',
+            url: databaseUrl,
+            entities,
+            synchronize: configService.get('NODE_ENV') === 'development',
+            logging: configService.get('NODE_ENV') === 'development',
+            migrations: [__dirname + '/database/migrations/*{.ts,.js}'],
+            migrationsRun: true,
+            ssl: configService.get('NODE_ENV') === 'production' ? { rejectUnauthorized: false } : false,
+          };
+        }
+
         return {
           type: 'postgres',
           host: configService.get('DATABASE_HOST'),
