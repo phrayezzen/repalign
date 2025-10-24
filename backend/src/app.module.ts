@@ -91,10 +91,10 @@ import { Activity } from './gamification/entities/activity.entity';
             type: 'postgres',
             url: databaseUrl,
             entities,
-            synchronize: configService.get('NODE_ENV') === 'development',
-            logging: configService.get('NODE_ENV') === 'development',
+            synchronize: configService.get('NODE_ENV') === 'production',
+            logging: true,  // Enable logging to debug Railway issues
             migrations: [__dirname + '/database/migrations/*{.ts,.js}'],
-            migrationsRun: true,
+            migrationsRun: false,  // Disable auto-migrations for now
           };
         }
 
